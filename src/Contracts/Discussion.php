@@ -243,7 +243,7 @@ interface Discussion
      *
      * @param  int  $userId
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function userUnreadMessages($userId);
 

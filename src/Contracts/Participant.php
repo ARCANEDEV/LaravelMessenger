@@ -46,4 +46,15 @@ interface Participant
      * @return string
      */
     public function stringInfo();
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Main Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Restore a soft-deleted model instance.
+     *
+     * @return bool|null
+     */
+    public function restore();
 }

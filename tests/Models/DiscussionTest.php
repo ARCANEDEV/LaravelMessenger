@@ -557,11 +557,17 @@ class DiscussionTest extends TestCase
             $this->factory->make(Message::class, ['body' => 'Message 2', 'created_at' => Carbon::now()])
         );
 
-        $this->assertEquals('Message 1', $discussion->userUnreadMessages(1)->first()->body);
-        $this->assertCount(2, $discussion->userUnreadMessages(1));
+        $messages = $discussion->userUnreadMessages(1);
 
-        $this->assertEquals('Message 2', $discussion->userUnreadMessages(2)->first()->body);
-        $this->assertCount(1, $discussion->userUnreadMessages(2));
+        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $messages);
+        $this->assertCount(2, $messages);
+        $this->assertEquals('Message 1', $messages->first()->body);
+
+        $messages = $discussion->userUnreadMessages(2);
+
+        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $messages);
+        $this->assertCount(1, $messages);
+        $this->assertEquals('Message 2', $messages->first()->body);
     }
 
     /** @test */

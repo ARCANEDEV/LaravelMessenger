@@ -7,6 +7,7 @@ use Arcanedev\LaravelMessenger\Contracts\Participant as ParticipantContract;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\JoinClause;
 
 /**
  * Class     Discussion
@@ -135,14 +136,14 @@ class Discussion extends Model implements DiscussionContract
      */
     public function scopeForUser(Builder $query, $userId)
     {
-        $participants = $this->getParticipantsTable();
-
-        return $query->join($participants, function ($join) use ($participants, $userId) {
-            /** @var \Illuminate\Database\Query\JoinClause $join */
-            $join->on($this->getQualifiedKeyName(), '=', "{$participants}.discussion_id")
-                 ->where("{$participants}.user_id", '=', $userId)
-                 ->whereNull("{$participants}.deleted_at");
-        });
+        return $query->join(
+            $participants = $this->getParticipantsTable(),
+            function (JoinClause $join) use ($participants, $userId) {
+                $join->on($this->getQualifiedKeyName(), '=', "{$participants}.discussion_id")
+                    ->where("{$participants}.user_id", '=', $userId)
+                    ->whereNull("{$participants}.deleted_at");
+            }
+        );
     }
 
     /**
@@ -268,9 +269,8 @@ class Discussion extends Model implements DiscussionContract
             ->lists('user_id')
             ->toArray();
 
-        if ($userId && ! in_array($userId, $usersIds)) {
+        if ( ! is_null($userId) && ! in_array($userId, $usersIds))
             $usersIds[] = $userId;
-        }
 
         return $usersIds;
     }
@@ -471,11 +471,10 @@ class Discussion extends Model implements DiscussionContract
      *
      * @param  int  $userId
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function userUnreadMessages($userId)
     {
-        /** @var \Illuminate\Database\Eloquent\Collection $messages */
         $participant = $this->getParticipantByUserId($userId);
 
         if (is_null($participant))            return collect();

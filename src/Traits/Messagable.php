@@ -104,4 +104,32 @@ trait Messagable
             return $discussion->updated_at > $participants->get($discussion->id);
         })->pluck('id')->toArray();
     }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Required Methods
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Define a many-to-many relationship.
+     *
+     * @param  string  $related
+     * @param  string  $table
+     * @param  string  $foreignKey
+     * @param  string  $otherKey
+     * @param  string  $relation
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    abstract public function belongsToMany($related, $table = null, $foreignKey = null, $otherKey = null, $relation = null);
+
+    /**
+     * Define a one-to-many relationship.
+     *
+     * @param  string  $related
+     * @param  string  $foreignKey
+     * @param  string  $localKey
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    abstract public function hasMany($related, $foreignKey = null, $localKey = null);
 }
