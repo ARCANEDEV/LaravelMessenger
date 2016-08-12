@@ -56,6 +56,15 @@ class Discussion extends Model implements DiscussionContract
      */
     protected $dates = ['deleted_at'];
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'id' => 'integer',
+    ];
+
     /* ------------------------------------------------------------------------------------------------
      |  Constructor
      | ------------------------------------------------------------------------------------------------
@@ -256,7 +265,7 @@ class Discussion extends Model implements DiscussionContract
     {
         $usersIds = $this->participants()
             ->withTrashed()
-            ->pluck('user_id')
+            ->lists('user_id')
             ->toArray();
 
         if ($userId && ! in_array($userId, $usersIds)) {

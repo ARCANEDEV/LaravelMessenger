@@ -43,7 +43,7 @@ class DiscussionTest extends TestCase
         );
 
         $this->assertInstanceOf(User::class, $discussion->creator);
-        $this->assertSame($userId, $discussion->creator->id);
+        $this->assertEquals($userId, $discussion->creator->id);
     }
 
     /** @test */
@@ -380,7 +380,7 @@ class DiscussionTest extends TestCase
         $latestMessage = $discussion->latest_message;
 
         $this->assertInstanceOf(Message::class, $latestMessage);
-        $this->assertSame(3, $latestMessage->id);
+        $this->assertEquals(3, $latestMessage->id);
     }
 
     /** @test */

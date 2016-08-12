@@ -57,7 +57,7 @@ class MessageTest extends TestCase
 
         $discussion->messages()->save($message);
 
-        $this->assertSame(2, $message->author->id);
+        $this->assertEquals(2, $message->author->id);
     }
 
     /** @test */

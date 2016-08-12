@@ -12,17 +12,24 @@ $factory->define(Models\Discussion::class, function (Faker $f) {
 });
 
 $factory->define(Models\Message::class, function (Faker $f) {
-    return [
+    return version_compare(app()->version(), '5.2.0', '>=') ? [
         'discussion_id' => function () { return factory(Models\Discussion::class)->create()->id; },
         'user_id'       => function () { return factory(User::class)->create()->id; },
+        'body'          => $f->sentence,
+    ] : [
+        'discussion_id' => 1,
+        'user_id'       => 1,
         'body'          => $f->sentence,
     ];
 });
 
 $factory->define(Models\Participant::class, function (Faker $f) {
-    return [
+    return version_compare(app()->version(), '5.2.0', '>=') ? [
         'discussion_id' => function () { return factory(Models\Discussion::class)->create()->id; },
         'user_id'       => function () { return factory(User::class)->create()->id; },
+    ] : [
+        'discussion_id' => 1,
+        'user_id'       => 1,
     ];
 });
 
