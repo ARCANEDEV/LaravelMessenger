@@ -42,12 +42,12 @@ class Message extends Model implements MessageContract
     protected $fillable = ['discussion_id', 'user_id', 'body'];
 
     /**
-     * Validation rules.
+     * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $rules = [
-        'body' => 'required',
+    protected $casts = [
+        'id' => 'integer',
     ];
 
     /* ------------------------------------------------------------------------------------------------

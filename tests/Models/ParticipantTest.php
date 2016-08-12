@@ -25,7 +25,7 @@ class ParticipantTest extends TestCase
 
         $this->assertInstanceOf(Participant::class, $participant);
         $this->assertInstanceOf(User::class, $participant->user);
-        $this->assertSame($participant->user_id, $participant->user->id);
+        $this->assertEquals($participant->user_id, $participant->user->id);
     }
 
     /** @test */

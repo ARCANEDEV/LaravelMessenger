@@ -91,7 +91,7 @@ class LaravelMessengerServiceProvider extends ServiceProvider
         ];
 
         foreach ($bindings as $key => $contract) {
-            $this->bind($contract, $config->get("laravel-messenger.$key.model"));
+            $this->bind($contract, $config->get("{$this->package}.{$key}.model"));
         }
     }
 }
