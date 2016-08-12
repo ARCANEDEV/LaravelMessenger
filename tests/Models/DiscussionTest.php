@@ -559,13 +559,13 @@ class DiscussionTest extends TestCase
 
         $messages = $discussion->userUnreadMessages(1);
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $messages);
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $messages);
         $this->assertCount(2, $messages);
         $this->assertEquals('Message 1', $messages->first()->body);
 
         $messages = $discussion->userUnreadMessages(2);
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $messages);
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $messages);
         $this->assertCount(1, $messages);
         $this->assertEquals('Message 2', $messages->first()->body);
     }

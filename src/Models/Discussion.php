@@ -471,18 +471,20 @@ class Discussion extends Model implements DiscussionContract
      *
      * @param  int  $userId
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection
      */
     public function userUnreadMessages($userId)
     {
         $participant = $this->getParticipantByUserId($userId);
 
         if (is_null($participant))            return collect();
-        if (is_null($participant->last_read)) return $this->messages;
+        if (is_null($participant->last_read)) return collect($this->messages);
 
-        return $this->messages->filter(function (MessageContract $message) use ($participant) {
+        $messages = $this->messages->filter(function (MessageContract $message) use ($participant) {
             return $message->updated_at->gt($participant->last_read);
         });
+
+        return collect($messages);
     }
 
     /**
