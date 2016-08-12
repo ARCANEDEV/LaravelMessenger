@@ -22,7 +22,7 @@ trait ConfigHelper
      */
     protected function getTableFromConfig($key, $default = null)
     {
-        return $this->getFromConfig("$key.table", $default);
+        return $this->getFromConfig("{$key}.table", $default);
     }
 
     /**
@@ -35,7 +35,7 @@ trait ConfigHelper
      */
     protected function getModelFromConfig($key, $default = null)
     {
-        return $this->getFromConfig("$key.model", $default);
+        return $this->getFromConfig("{$key}.model", $default);
     }
 
     /**
@@ -48,6 +48,6 @@ trait ConfigHelper
      */
     protected function getFromConfig($key, $default = null)
     {
-        return config("laravel-messenger.$key", $default);
+        return config("laravel-messenger.{$key}", $default);
     }
 }
