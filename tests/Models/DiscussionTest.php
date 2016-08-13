@@ -453,20 +453,23 @@ class DiscussionTest extends TestCase
 
         $usersIds = $discussion->participantsUserIds();
 
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $usersIds);
         $this->assertCount(count($ids), $usersIds);
-        $this->assertEquals($ids, $usersIds);
+        $this->assertEquals($ids, $usersIds->toArray());
 
         // Ignore the user id if exists
         $usersIds = $discussion->participantsUserIds(3);
 
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $usersIds);
         $this->assertCount(count($ids), $usersIds);
-        $this->assertEquals($ids, $usersIds);
+        $this->assertEquals($ids, $usersIds->toArray());
 
         $ids[]    = 4;
         $usersIds = $discussion->participantsUserIds(4);
 
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $usersIds);
         $this->assertCount(count($ids), $usersIds);
-        $this->assertEquals($ids, $usersIds);
+        $this->assertEquals($ids, $usersIds->toArray());
     }
 
     /** @test */
@@ -594,7 +597,7 @@ class DiscussionTest extends TestCase
             $this->factory->make(Message::class, ['body' => 'Message 2', 'created_at' => Carbon::now()])
         );
 
-        $this->assertEquals(2, $discussion->userUnreadMessagesCount($participantOne->user_id));
-        $this->assertEquals(1, $discussion->userUnreadMessagesCount($participantTwo->user_id));
+        $this->assertCount(2, $discussion->userUnreadMessages($participantOne->user_id));
+        $this->assertCount(1, $discussion->userUnreadMessages($participantTwo->user_id));
     }
 }

@@ -260,19 +260,14 @@ class Discussion extends Model implements DiscussionContract
      *
      * @param  int|null  $userId
      *
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     public function participantsUserIds($userId = null)
     {
-        $usersIds = $this->participants()
-            ->withTrashed()
-            ->lists('user_id')
-            ->toArray();
+        /** @var \Illuminate\Support\Collection $usersIds */
+        $usersIds = $this->participants()->withTrashed()->lists('user_id');
 
-        if ( ! is_null($userId) && ! in_array($userId, $usersIds))
-            $usersIds[] = $userId;
-
-        return $usersIds;
+        return $usersIds->push($userId)->filter()->unique();
     }
 
     /**
@@ -319,14 +314,7 @@ class Discussion extends Model implements DiscussionContract
      */
     public function removeParticipant($userId, $reload = true)
     {
-        $deleted = $this->participants()
-            ->where('discussion_id', $this->id)
-            ->where('user_id', $userId)
-            ->delete();
-
-        if ($reload) $this->load(['participants']);
-
-        return $deleted;
+        return $this->removeParticipants([$userId], $reload);
     }
 
     /**
@@ -477,25 +465,12 @@ class Discussion extends Model implements DiscussionContract
     {
         $participant = $this->getParticipantByUserId($userId);
 
-        if (is_null($participant))            return collect();
-        if (is_null($participant->last_read)) return collect($this->messages);
+        if (is_null($participant)) return collect();
 
-        $messages = $this->messages->filter(function (MessageContract $message) use ($participant) {
-            return $message->updated_at->gt($participant->last_read);
-        });
-
-        return collect($messages);
-    }
-
-    /**
-     * Returns count of unread messages in thread for given user.
-     *
-     * @param  int  $userId
-     *
-     * @return int
-     */
-    public function userUnreadMessagesCount($userId)
-    {
-        return $this->userUnreadMessages($userId)->count();
+        return is_null($participant->last_read)
+            ? $this->messages->toBase()
+            : $this->messages->filter(function (MessageContract $message) use ($participant) {
+                return $message->updated_at->gt($participant->last_read);
+            })->toBase();
     }
 }

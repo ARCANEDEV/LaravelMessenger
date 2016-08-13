@@ -133,7 +133,7 @@ interface Discussion
      *
      * @param  int|null  $userId
      *
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     public function participantsUserIds($userId = null);
 
@@ -246,13 +246,4 @@ interface Discussion
      * @return \Illuminate\Support\Collection
      */
     public function userUnreadMessages($userId);
-
-    /**
-     * Returns count of unread messages in thread for given user.
-     *
-     * @param  int  $userId
-     *
-     * @return int
-     */
-    public function userUnreadMessagesCount($userId);
 }
