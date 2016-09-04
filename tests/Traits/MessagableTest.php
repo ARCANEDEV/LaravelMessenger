@@ -50,7 +50,7 @@ class MessagableTest extends TestCase
 
         $discussions = $user->discussionsWithNewMessages();
 
-        $this->assertSame(1, $discussions[0]);
+        $this->assertSame(1, $discussions->first()->id);
         $this->assertSame(1, $user->newMessagesCount());
     }
 
