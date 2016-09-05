@@ -4,6 +4,7 @@ use Arcanedev\LaravelMessenger\Bases\Model;
 use Arcanedev\LaravelMessenger\Contracts\Discussion as DiscussionContract;
 use Arcanedev\LaravelMessenger\Contracts\Message as MessageContract;
 use Arcanedev\LaravelMessenger\Contracts\Participant as ParticipantContract;
+use Arcanedev\Support\Collection as ArcanedevCollection;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -260,14 +261,19 @@ class Discussion extends Model implements DiscussionContract
      *
      * @param  int|null  $userId
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Arcanedev\Support\Collection
      */
     public function participantsUserIds($userId = null)
     {
         /** @var \Illuminate\Support\Collection $usersIds */
-        $usersIds = $this->participants()->withTrashed()->lists('user_id');
+        $usersIds = $this->participants()->withTrashed()->get()
+            ->map(function (ParticipantContract $participant) {
+                return $participant->user_id;
+            });
 
-        return $usersIds->push($userId)->filter()->unique();
+        if ($userId !== null) $usersIds->push($userId);
+
+        return ArcanedevCollection::make($usersIds)->unique();
     }
 
     /**
@@ -390,9 +396,7 @@ class Discussion extends Model implements DiscussionContract
      */
     public function getTrashedParticipants()
     {
-        return $this->participants()
-            ->onlyTrashed()
-            ->get();
+        return $this->participants()->onlyTrashed()->get();
     }
 
     /**
@@ -404,10 +408,11 @@ class Discussion extends Model implements DiscussionContract
      */
     public function restoreAllParticipants($reload = true)
     {
-        $participants = $this->getTrashedParticipants();
-        $restored     = $participants->filter(function (ParticipantContract $participant) {
-            return $participant->restore();
-        })->count();
+        $restored = $this->getTrashedParticipants()
+            ->filter(function (ParticipantContract $participant) {
+                return $participant->restore();
+            })
+            ->count();
 
         if ($reload) $this->load(['participants']);
 
@@ -435,9 +440,11 @@ class Discussion extends Model implements DiscussionContract
             };
         }
 
-        return $participants->filter(function (ParticipantContract $participant) use ($ignoredUserId) {
+        $participants = $participants->filter(function (ParticipantContract $participant) use ($ignoredUserId) {
             return $participant->user_id !== $ignoredUserId;
-        })->map($callback)->implode($glue);
+        })->map($callback);
+
+        return $participants->implode($glue);
     }
 
     /**

@@ -1,7 +1,6 @@
 # Laravel Messenger [![Packagist License][badge_license]](LICENSE.md) [![For Laravel 5][badge_laravel]][link-github-repo]
 
 [![Travis Status][badge_build]][link-travis]
-[![HHVM Status][badge_hhvm]][link-hhvm]
 [![Coverage Status][badge_coverage]][link-scrutinizer]
 [![Scrutinizer Code Quality][badge_quality]][link-scrutinizer]
 [![SensioLabs Insight][badge_insight]][link-insight]
@@ -23,7 +22,7 @@ This Laravel Messenger will allow you to add a messaging system into your Larave
   * Easy setup &amp; configuration.
   * Well documented &amp; IDE Friendly.
   * Well tested with maximum code quality.
-  * Laravel `5.1 | 5.2` are supported.
+  * Laravel `5.1 | 5.2 | 5.3` are supported.
   * Made with :heart: &amp; :coffee:.
   
 ## Table of contents
@@ -36,7 +35,6 @@ This Laravel Messenger will allow you to add a messaging system into your Larave
 ## TODOS
 
   - [ ] Documentation.
-  - [ ] Laravel 5.3 support.
 
 ## Contribution
 
@@ -52,10 +50,9 @@ If you discover any security related issues, please email arcanedev.maroc@gmail.
   - [All Contributors][link-contributors]
   - [cmgmyr/laravel-messenger](https://github.com/cmgmyr/laravel-messenger)
 
-[badge_laravel]:      https://img.shields.io/badge/For-Laravel%205.1|5.2-orange.svg?style=flat-square
+[badge_laravel]:      https://img.shields.io/badge/For-Laravel%205.1|5.2|5.3-orange.svg?style=flat-square
 [badge_license]:      https://img.shields.io/packagist/l/arcanedev/laravel-messenger.svg?style=flat-square
 [badge_build]:        https://img.shields.io/travis/ARCANEDEV/LaravelMessenger.svg?style=flat-square
-[badge_hhvm]:         https://img.shields.io/hhvm/arcanedev/laravel-messenger.svg?style=flat-square
 [badge_coverage]:     https://img.shields.io/scrutinizer/coverage/g/ARCANEDEV/LaravelMessenger.svg?style=flat-square
 [badge_quality]:      https://img.shields.io/scrutinizer/g/ARCANEDEV/LaravelMessenger.svg?style=flat-square
 [badge_insight]:      https://img.shields.io/sensiolabs/i/0fe62754-1219-409a-9d05-b6ae7e3e342f.svg?style=flat-square
@@ -70,6 +67,5 @@ If you discover any security related issues, please email arcanedev.maroc@gmail.
 [link-contributors]:  https://github.com/ARCANEDEV/LaravelMessenger/graphs/contributors
 [link-packagist]:     https://packagist.org/packages/arcanedev/laravel-messenger
 [link-travis]:        https://travis-ci.org/ARCANEDEV/LaravelMessenger
-[link-hhvm]:          http://hhvm.h4cc.de/package/arcanedev/laravel-messenger
 [link-scrutinizer]:   https://scrutinizer-ci.com/g/ARCANEDEV/LaravelMessenger/?branch=master
 [link-insight]:       https://insight.sensiolabs.com/projects/0fe62754-1219-409a-9d05-b6ae7e3e342f

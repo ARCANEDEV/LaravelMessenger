@@ -3,6 +3,7 @@
 use Arcanedev\LaravelMessenger\Contracts\Discussion as DiscussionContract;
 use Arcanedev\LaravelMessenger\Contracts\Participant as ParticipantContract;
 use Arcanedev\LaravelMessenger\Models;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Trait     Messagable
@@ -77,32 +78,25 @@ trait Messagable
      */
     public function newMessagesCount()
     {
-        return count($this->discussionsWithNewMessages());
+        return $this->discussionsWithNewMessages()->count();
     }
 
     /**
      * Returns all discussions IDs with new messages.
      *
-     * @return array
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function discussionsWithNewMessages()
     {
-        /** @var \Illuminate\Database\Eloquent\Collection  $participants */
-        $participants = app(ParticipantContract::class)
-            ->where('user_id', $this->id)
-            ->get()
-            ->pluck('last_read', 'discussion_id');
+        $participantsTable = $this->getTableFromConfig('participants', 'participants');
+        $discussionsTable  = $this->getTableFromConfig('discussions', 'discussions');
 
-        if ($participants->isEmpty()) return [];
-
-        /** @var \Illuminate\Database\Eloquent\Collection  $discussions */
-        $discussions = app(DiscussionContract::class)
-            ->whereIn('id', $participants->keys()->toArray())
-            ->get();
-
-        return $discussions->filter(function (Models\Discussion $discussion) use ($participants) {
-            return $discussion->updated_at > $participants->get($discussion->id);
-        })->pluck('id')->toArray();
+        return $this->discussions()->where(function (Builder $query) use ($participantsTable, $discussionsTable) {
+            $query->whereNull("$participantsTable.last_read");
+            $query->orWhere(
+                "$discussionsTable.updated_at", '>', $this->getConnection()->raw("$participantsTable.last_read")
+            );
+        })->get();
     }
 
     /* ------------------------------------------------------------------------------------------------
