@@ -34,15 +34,15 @@ use Illuminate\Database\Query\JoinClause;
  */
 class Discussion extends Model implements DiscussionContract
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Traits
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     use SoftDeletes;
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Properties
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * The attributes that can be set with Mass Assignment.
@@ -67,9 +67,9 @@ class Discussion extends Model implements DiscussionContract
         'id' => 'integer',
     ];
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Constructor
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Create a new Eloquent model instance.
@@ -85,9 +85,9 @@ class Discussion extends Model implements DiscussionContract
         parent::__construct($attributes);
     }
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Relationships
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Participants relationship.
@@ -114,6 +114,21 @@ class Discussion extends Model implements DiscussionContract
     }
 
     /**
+     * User's relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users()
+    {
+        return $this->belongsToMany(
+            $this->getModelFromConfig('users', \App\User::class),
+            'participants',
+            'discussion_id',
+            'user_id'
+        );
+    }
+
+    /**
      * Get the user that created the first message.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -123,9 +138,9 @@ class Discussion extends Model implements DiscussionContract
         return $this->messages()->oldest()->first()->user();
     }
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Scopes
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Scope discussions that the user is associated with.
@@ -215,9 +230,9 @@ class Discussion extends Model implements DiscussionContract
         return $query->where('subject', 'like', $subject);
     }
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Getters & Setters
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Get the latest_message attribute.
@@ -229,9 +244,9 @@ class Discussion extends Model implements DiscussionContract
         return $this->messages->sortByDesc('created_at')->first();
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Returns all of the latest discussions by `updated_at` date.

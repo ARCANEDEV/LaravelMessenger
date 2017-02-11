@@ -1,7 +1,7 @@
 <?php namespace Arcanedev\LaravelMessenger;
 
 use Arcanedev\LaravelMessenger\Contracts as MessengerContracts;
-use Arcanedev\Support\PackageServiceProvider as ServiceProvider;
+use Arcanedev\Support\PackageServiceProvider;
 
 /**
  * Class     LaravelMessengerServiceProvider
@@ -9,11 +9,11 @@ use Arcanedev\Support\PackageServiceProvider as ServiceProvider;
  * @package  Arcanedev\LaravelMessenger
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class LaravelMessengerServiceProvider extends ServiceProvider
+class LaravelMessengerServiceProvider extends PackageServiceProvider
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Properties
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Package name.
@@ -22,9 +22,9 @@ class LaravelMessengerServiceProvider extends ServiceProvider
      */
     protected $package = 'laravel-messenger';
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Getters & Setters
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Get the base path of the package.
@@ -36,15 +36,17 @@ class LaravelMessengerServiceProvider extends ServiceProvider
         return dirname(__DIR__);
     }
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Register the service provider.
      */
     public function register()
     {
+        parent::register();
+
         $this->registerConfig();
         $this->bindModels();
     }
@@ -74,9 +76,9 @@ class LaravelMessengerServiceProvider extends ServiceProvider
         ];
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Other Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Other Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Bind the models.
