@@ -51,6 +51,7 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app)
     {
         return [
+            \Orchestra\Database\ConsoleServiceProvider::class,
             \Arcanedev\LaravelMessenger\LaravelMessengerServiceProvider::class,
         ];
     }
