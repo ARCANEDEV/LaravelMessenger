@@ -522,6 +522,23 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
+    public function it_can_get_all_users_for_a_discussion()
+    {
+        /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
+        $discussion = $this->factory->create(Discussion::class);
+
+        $discussion->participants()->saveMany([
+            $this->factory->make(Participant::class, ['user_id' => 1]),
+            $this->factory->make(Participant::class, ['user_id' => 2]),
+        ]);
+
+        $discussionUsers = $discussion->users()->get();
+
+        $this->assertCount(2, $discussionUsers);
+        $this->assertSame([1, 2], $discussionUsers->pluck('id')->toArray());
+    }
+
+    /** @test */
     public function it_can_get_all_discussions_for_a_user_with_new_messages()
     {
         $userId = 1;
