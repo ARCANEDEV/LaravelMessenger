@@ -122,7 +122,7 @@ class Discussion extends Model implements DiscussionContract
     {
         return $this->belongsToMany(
             $this->getModelFromConfig('users', \App\User::class),
-            'participants',
+            $this->getTableFromConfig('participants', 'participants'),
             'discussion_id',
             'user_id'
         );
