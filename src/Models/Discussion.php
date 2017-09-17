@@ -1,14 +1,13 @@
 <?php namespace Arcanedev\LaravelMessenger\Models;
 
-use Arcanedev\LaravelMessenger\Bases\Model;
 use Arcanedev\LaravelMessenger\Contracts\Discussion as DiscussionContract;
 use Arcanedev\LaravelMessenger\Contracts\Message as MessageContract;
 use Arcanedev\LaravelMessenger\Contracts\Participant as ParticipantContract;
-use Arcanedev\Support\Collection as ArcanedevCollection;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Collection;
 
 /**
  * Class     Discussion
@@ -38,12 +37,14 @@ class Discussion extends Model implements DiscussionContract
      |  Traits
      | -----------------------------------------------------------------
      */
+
     use SoftDeletes;
 
     /* -----------------------------------------------------------------
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /**
      * The attributes that can be set with Mass Assignment.
      *
@@ -71,6 +72,7 @@ class Discussion extends Model implements DiscussionContract
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Create a new Eloquent model instance.
      *
@@ -89,6 +91,7 @@ class Discussion extends Model implements DiscussionContract
      |  Relationships
      | -----------------------------------------------------------------
      */
+
     /**
      * Participants relationship.
      *
@@ -142,6 +145,7 @@ class Discussion extends Model implements DiscussionContract
      |  Scopes
      | -----------------------------------------------------------------
      */
+
     /**
      * Scope discussions that the user is associated with.
      *
@@ -154,10 +158,11 @@ class Discussion extends Model implements DiscussionContract
     {
         return $query->join(
             $participants = $this->getParticipantsTable(),
+
             function (JoinClause $join) use ($participants, $userId) {
                 $join->on($this->getQualifiedKeyName(), '=', "{$participants}.discussion_id")
-                    ->where("{$participants}.user_id", '=', $userId)
-                    ->whereNull("{$participants}.deleted_at");
+                     ->where("{$participants}.user_id", '=', $userId)
+                     ->whereNull("{$participants}.deleted_at");
             }
         );
     }
@@ -199,8 +204,8 @@ class Discussion extends Model implements DiscussionContract
 
         return $query->whereHas($participants, function (Builder $query) use ($userIds) {
             $query->whereIn('user_id', $userIds)
-                ->groupBy('discussion_id')
-                ->havingRaw('COUNT(discussion_id)=' . count($userIds));
+                  ->groupBy('discussion_id')
+                  ->havingRaw('COUNT(discussion_id)=' . count($userIds));
         });
     }
 
@@ -225,15 +230,14 @@ class Discussion extends Model implements DiscussionContract
      */
     public function scopeSubject(Builder $query, $subject, $strict = false)
     {
-        $subject = $strict ? $subject : "%{$subject}%";
-
-        return $query->where('subject', 'like', $subject);
+        return $query->where('subject', 'like', $strict ? $subject : "%{$subject}%");
     }
 
     /* -----------------------------------------------------------------
      |  Getters & Setters
      | -----------------------------------------------------------------
      */
+
     /**
      * Get the latest_message attribute.
      *
@@ -248,6 +252,7 @@ class Discussion extends Model implements DiscussionContract
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Returns all of the latest discussions by `updated_at` date.
      *
@@ -255,7 +260,7 @@ class Discussion extends Model implements DiscussionContract
      */
     public static function getLatest()
     {
-        return self::latest('updated_at')->get();
+        return self::query()->latest('updated_at')->get();
     }
 
     /**
@@ -276,7 +281,7 @@ class Discussion extends Model implements DiscussionContract
      *
      * @param  int|null  $userId
      *
-     * @return \Arcanedev\Support\Collection
+     * @return \Illuminate\Support\Collection
      */
     public function participantsUserIds($userId = null)
     {
@@ -286,15 +291,16 @@ class Discussion extends Model implements DiscussionContract
                 return $participant->user_id;
             });
 
-        if ($userId !== null) $usersIds->push($userId);
+        if ($userId !== null)
+            $usersIds->push($userId);
 
-        return ArcanedevCollection::make($usersIds)->unique();
+        return $usersIds->unique();
     }
 
     /**
      * Add a user to discussion as a participant.
      *
-     * @param  int   $userId
+     * @param  int  $userId
      *
      * @return \Arcanedev\LaravelMessenger\Models\Participant
      */
@@ -353,7 +359,8 @@ class Discussion extends Model implements DiscussionContract
             ->where('discussion_id', $this->id)
             ->delete();
 
-        if ($reload) $this->load(['participants']);
+        if ($reload)
+            $this->load(['participants']);
 
         return $deleted;
     }
@@ -399,9 +406,12 @@ class Discussion extends Model implements DiscussionContract
      */
     public function getParticipantByUserId($userId)
     {
-        return $this->participants()
+        /** @var  \Arcanedev\LaravelMessenger\Models\Participant  $participant */
+        $participant = $this->participants()
             ->where('user_id', $userId)
             ->first();
+
+        return $participant;
     }
 
     /**
@@ -429,7 +439,8 @@ class Discussion extends Model implements DiscussionContract
             })
             ->count();
 
-        if ($reload) $this->load(['participants']);
+        if ($reload)
+            $this->load(['participants']);
 
         return $restored;
     }
@@ -455,11 +466,9 @@ class Discussion extends Model implements DiscussionContract
             };
         }
 
-        $participants = $participants->filter(function (ParticipantContract $participant) use ($ignoredUserId) {
-            return $participant->user_id !== $ignoredUserId;
-        })->map($callback);
-
-        return $participants->implode($glue);
+        return $participants->reject(function (ParticipantContract $participant) use ($ignoredUserId) {
+            return $participant->user_id === $ignoredUserId;
+        })->map($callback)->implode($glue);
     }
 
     /**
@@ -487,7 +496,8 @@ class Discussion extends Model implements DiscussionContract
     {
         $participant = $this->getParticipantByUserId($userId);
 
-        if (is_null($participant)) return collect();
+        if (is_null($participant))
+            return new Collection;
 
         return is_null($participant->last_read)
             ? $this->messages->toBase()

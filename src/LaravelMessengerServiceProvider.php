@@ -1,6 +1,5 @@
 <?php namespace Arcanedev\LaravelMessenger;
 
-use Arcanedev\LaravelMessenger\Contracts as MessengerContracts;
 use Arcanedev\Support\PackageServiceProvider;
 
 /**
@@ -15,6 +14,7 @@ class LaravelMessengerServiceProvider extends PackageServiceProvider
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /**
      * Package name.
      *
@@ -23,23 +23,10 @@ class LaravelMessengerServiceProvider extends PackageServiceProvider
     protected $package = 'laravel-messenger';
 
     /* -----------------------------------------------------------------
-     |  Getters & Setters
+     |  Main Methods
      | -----------------------------------------------------------------
      */
-    /**
-     * Get the base path of the package.
-     *
-     * @return string
-     */
-    public function getBasePath()
-    {
-        return dirname(__DIR__);
-    }
 
-    /* -----------------------------------------------------------------
-     |  Main Functions
-     | -----------------------------------------------------------------
-     */
     /**
      * Register the service provider.
      */
@@ -59,7 +46,8 @@ class LaravelMessengerServiceProvider extends PackageServiceProvider
         parent::boot();
 
         $this->publishConfig();
-        $this->publishMigrations();
+
+        Messenger::$runsMigrations ? $this->loadMigrations() : $this->publishMigrations();
     }
 
     /**
@@ -70,9 +58,9 @@ class LaravelMessengerServiceProvider extends PackageServiceProvider
     public function provides()
     {
         return [
-            MessengerContracts\Discussion::class,
-            MessengerContracts\Message::class,
-            MessengerContracts\Participant::class,
+            Contracts\Discussion::class,
+            Contracts\Message::class,
+            Contracts\Participant::class,
         ];
     }
 
@@ -80,6 +68,7 @@ class LaravelMessengerServiceProvider extends PackageServiceProvider
      |  Other Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Bind the models.
      */
@@ -87,9 +76,9 @@ class LaravelMessengerServiceProvider extends PackageServiceProvider
     {
         $config   = $this->config();
         $bindings = [
-            'discussions'  => MessengerContracts\Discussion::class,
-            'messages'     => MessengerContracts\Message::class,
-            'participants' => MessengerContracts\Participant::class,
+            'discussions'  => Contracts\Discussion::class,
+            'messages'     => Contracts\Message::class,
+            'participants' => Contracts\Participant::class,
         ];
 
         foreach ($bindings as $key => $contract) {

@@ -7,15 +7,18 @@ use Illuminate\Database\Schema\Blueprint;
  * Class     CreateDiscussionsTable
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @see \Arcanedev\LaravelMessenger\Models\Discussion
  */
 class CreateDiscussionsTable extends Migration
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Constructor
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
+
     /**
-     * CreateParticipantsTable constructor.
+     * CreateDiscussionsTable constructor.
      */
     public function __construct()
     {
@@ -26,10 +29,11 @@ class CreateDiscussionsTable extends Migration
         );
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
+
     /**
      * Run the migrations.
      */

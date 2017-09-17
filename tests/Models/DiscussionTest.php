@@ -6,6 +6,7 @@ use Arcanedev\LaravelMessenger\Models\Participant;
 use Arcanedev\LaravelMessenger\Tests\Stubs\Models\User;
 use Arcanedev\LaravelMessenger\Tests\TestCase;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 /**
  * Class     DiscussionTest
@@ -15,10 +16,11 @@ use Carbon\Carbon;
  */
 class DiscussionTest extends TestCase
 {
-    /* ------------------------------------------------------------------------------------------------
-     |  Test Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Tests
+     | -----------------------------------------------------------------
      */
+
     /** @test */
     public function it_can_create_discussion()
     {
@@ -453,21 +455,21 @@ class DiscussionTest extends TestCase
 
         $usersIds = $discussion->participantsUserIds();
 
-        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $usersIds);
+        $this->assertInstanceOf(Collection::class, $usersIds);
         $this->assertCount(count($ids), $usersIds);
         $this->assertEquals($ids, $usersIds->toArray());
 
         // Ignore the user id if exists
         $usersIds = $discussion->participantsUserIds(3);
 
-        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $usersIds);
+        $this->assertInstanceOf(Collection::class, $usersIds);
         $this->assertCount(count($ids), $usersIds);
         $this->assertEquals($ids, $usersIds->toArray());
 
         $ids[]    = 4;
         $usersIds = $discussion->participantsUserIds(4);
 
-        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $usersIds);
+        $this->assertInstanceOf(Collection::class, $usersIds);
         $this->assertCount(count($ids), $usersIds);
         $this->assertEquals($ids, $usersIds->toArray());
     }
@@ -579,13 +581,13 @@ class DiscussionTest extends TestCase
 
         $messages = $discussion->userUnreadMessages(1);
 
-        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $messages);
+        $this->assertInstanceOf(Collection::class, $messages);
         $this->assertCount(2, $messages);
         $this->assertEquals('Message 1', $messages->first()->body);
 
         $messages = $discussion->userUnreadMessages(2);
 
-        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $messages);
+        $this->assertInstanceOf(Collection::class, $messages);
         $this->assertCount(1, $messages);
         $this->assertEquals('Message 2', $messages->first()->body);
     }
@@ -598,7 +600,7 @@ class DiscussionTest extends TestCase
          * @var \Arcanedev\LaravelMessenger\Models\Participant  $participantOne
          * @var \Arcanedev\LaravelMessenger\Models\Participant  $participantTwo
          */
-        $discussion     = $this->factory->create(Discussion::class);
+        $discussion = $this->factory->create(Discussion::class);
         $discussion->participants()->saveMany([
             $participantOne = $this->factory->make(Participant::class),
             $participantTwo = $this->factory->make(Participant::class, ['user_id' => 2]),
@@ -616,5 +618,11 @@ class DiscussionTest extends TestCase
 
         $this->assertCount(2, $discussion->userUnreadMessages($participantOne->user_id));
         $this->assertCount(1, $discussion->userUnreadMessages($participantTwo->user_id));
+
+        // it must return empty unread messages collection with invalid participant id
+        $messages = $discussion->userUnreadMessages(0);
+
+        $this->assertInstanceOf(Collection::class, $messages);
+        $this->assertCount(0, $messages);
     }
 }

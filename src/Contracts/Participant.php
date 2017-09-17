@@ -22,6 +22,7 @@ interface Participant
      |  Relationships
      | -----------------------------------------------------------------
      */
+
     /**
      * Discussion relationship.
      *
@@ -40,6 +41,7 @@ interface Participant
      |  Getters & Setters
      | -----------------------------------------------------------------
      */
+
     /**
      * Get the participant string info.
      *
@@ -51,6 +53,7 @@ interface Participant
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Restore a soft-deleted model instance.
      *
