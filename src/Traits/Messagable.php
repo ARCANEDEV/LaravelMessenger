@@ -110,13 +110,15 @@ trait Messagable
      *
      * @param  string  $related
      * @param  string  $table
-     * @param  string  $foreignKey
-     * @param  string  $otherKey
+     * @param  string  $foreignPivotKey
+     * @param  string  $relatedPivotKey
+     * @param  string  $parentKey
+     * @param  string  $relatedKey
      * @param  string  $relation
-     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    abstract public function belongsToMany($related, $table = null, $foreignKey = null, $otherKey = null, $relation = null);
+    abstract public function belongsToMany($related, $table = null, $foreignPivotKey = null, $relatedPivotKey = null,
+                                  $parentKey = null, $relatedKey = null, $relation = null);
 
     /**
      * Define a one-to-many relationship.
