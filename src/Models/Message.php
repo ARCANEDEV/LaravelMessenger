@@ -1,6 +1,5 @@
 <?php namespace Arcanedev\LaravelMessenger\Models;
 
-use Arcanedev\LaravelMessenger\Bases\Model;
 use Arcanedev\LaravelMessenger\Contracts\Message as MessageContract;
 
 /**
@@ -11,13 +10,14 @@ use Arcanedev\LaravelMessenger\Contracts\Message as MessageContract;
  *
  * @property  int                                            id
  * @property  int                                            discussion_id
- * @property  \Arcanedev\LaravelMessenger\Models\Discussion  discussion
  * @property  int                                            user_id
- * @property  \Illuminate\Database\Eloquent\Model            user
- * @property  \Illuminate\Database\Eloquent\Model            author
  * @property  int                                            body
  * @property  \Carbon\Carbon                                 created_at
  * @property  \Carbon\Carbon                                 updated_at
+ *
+ * @property  \Arcanedev\LaravelMessenger\Models\Discussion  discussion
+ * @property  \Illuminate\Database\Eloquent\Model            user
+ * @property  \Illuminate\Database\Eloquent\Model            author
  * @property  \Illuminate\Database\Eloquent\Collection       participants
  * @property  \Illuminate\Database\Eloquent\Collection       recipients
  */
@@ -27,6 +27,7 @@ class Message extends Model implements MessageContract
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /**
      * The relationships that should be touched on save.
      *
@@ -47,13 +48,16 @@ class Message extends Model implements MessageContract
      * @var array
      */
     protected $casts = [
-        'id' => 'integer',
+        'id'            => 'integer',
+        'discussion_id' => 'integer',
+        'user_id'       => 'integer',
     ];
 
     /* -----------------------------------------------------------------
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Create a new Eloquent model instance.
      *
@@ -72,6 +76,7 @@ class Message extends Model implements MessageContract
      |  Relationships
      | -----------------------------------------------------------------
      */
+
     /**
      * Discussion relationship.
      *
@@ -124,6 +129,7 @@ class Message extends Model implements MessageContract
      |  Getters & Setters
      | -----------------------------------------------------------------
      */
+
     /**
      * Recipients of this message.
      *
@@ -131,8 +137,8 @@ class Message extends Model implements MessageContract
      */
     public function getRecipientsAttribute()
     {
-        return $this->participants->filter(function (Participant $participant) {
-            return $participant->user_id != $this->user_id;
+        return $this->participants->reject(function (Participant $participant) {
+            return $participant->user_id === $this->user_id;
         });
     }
 }

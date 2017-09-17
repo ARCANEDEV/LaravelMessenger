@@ -24,6 +24,7 @@ interface Message
      |  Relationships
      | -----------------------------------------------------------------
      */
+
     /**
      * Discussion relationship.
      *
@@ -56,6 +57,7 @@ interface Message
      |  Getters & Setters
      | -----------------------------------------------------------------
      */
+
     /**
      * Recipients of this message.
      *

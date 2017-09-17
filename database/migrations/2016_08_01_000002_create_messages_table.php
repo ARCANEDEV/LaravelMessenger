@@ -7,15 +7,18 @@ use Illuminate\Database\Schema\Blueprint;
  * Class     CreateMessagesTable
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @see \Arcanedev\LaravelMessenger\Models\Message
  */
 class CreateMessagesTable extends Migration
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Constructor
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
+
     /**
-     * CreateParticipantsTable constructor.
+     * CreateMessagesTable constructor.
      */
     public function __construct()
     {
@@ -26,10 +29,11 @@ class CreateMessagesTable extends Migration
         );
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
+
     /**
      * Run the migrations.
      */
@@ -37,8 +41,8 @@ class CreateMessagesTable extends Migration
     {
         $this->createSchema(function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('discussion_id')->unsigned();
-            $table->integer('user_id')->unsigned();
+            $table->unsignedInteger('discussion_id');
+            $table->unsignedInteger('user_id');
             $table->text('body');
             $table->timestamps();
         });

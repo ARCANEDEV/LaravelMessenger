@@ -1,6 +1,5 @@
 <?php namespace Arcanedev\LaravelMessenger\Models;
 
-use Arcanedev\LaravelMessenger\Bases\Model;
 use Arcanedev\LaravelMessenger\Contracts\Participant as ParticipantContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -26,12 +25,14 @@ class Participant extends Model implements ParticipantContract
      |  Traits
      | -----------------------------------------------------------------
      */
+
     use SoftDeletes;
 
     /* -----------------------------------------------------------------
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /**
      * The attributes that can be set with Mass Assignment.
      *
@@ -61,6 +62,7 @@ class Participant extends Model implements ParticipantContract
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Create a new Eloquent model instance.
      *
@@ -79,6 +81,7 @@ class Participant extends Model implements ParticipantContract
      |  Relationships
      | -----------------------------------------------------------------
      */
+
     /**
      * Discussion relationship.
      *
@@ -107,6 +110,7 @@ class Participant extends Model implements ParticipantContract
      |  Getters & Setters
      | -----------------------------------------------------------------
      */
+
     /**
      * Get the participant string info.
      *

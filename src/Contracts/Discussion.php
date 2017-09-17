@@ -30,6 +30,7 @@ interface Discussion
      |  Relationships
      | -----------------------------------------------------------------
      */
+
     /**
      * Participants relationship.
      *
@@ -62,6 +63,7 @@ interface Discussion
      |  Scopes
      | -----------------------------------------------------------------
      */
+
     /**
      * Scope discussions that the user is associated with.
      *
@@ -107,6 +109,7 @@ interface Discussion
      |  Getters & Setters
      | -----------------------------------------------------------------
      */
+
     /**
      * Get the latest_message attribute.
      *
@@ -118,6 +121,7 @@ interface Discussion
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Returns all of the latest discussions by `updated_at` date.
      *
@@ -147,7 +151,7 @@ interface Discussion
     /**
      * Add a user to discussion as a participant.
      *
-     * @param  int   $userId
+     * @param  int  $userId
      *
      * @return \Arcanedev\LaravelMessenger\Models\Participant
      */

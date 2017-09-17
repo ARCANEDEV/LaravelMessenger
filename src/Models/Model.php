@@ -1,4 +1,4 @@
-<?php namespace Arcanedev\LaravelMessenger\Bases;
+<?php namespace Arcanedev\LaravelMessenger\Models;
 
 use Arcanedev\LaravelMessenger\Traits\ConfigHelper;
 use Arcanedev\Support\Bases\Model as BaseModel;
@@ -11,16 +11,18 @@ use Arcanedev\Support\Bases\Model as BaseModel;
  */
 abstract class Model extends BaseModel
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Traits
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
+
     use ConfigHelper;
 
     /* -----------------------------------------------------------------
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Create a new Eloquent model instance.
      *

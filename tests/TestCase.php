@@ -12,17 +12,19 @@ use Illuminate\Database\Eloquent\Factory as ModelFactory;
  */
 abstract class TestCase extends BaseTestCase
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Properties
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
+
     /** @var  \Illuminate\Database\Eloquent\Factory */
     protected $factory;
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
+
     public function setUp()
     {
         parent::setUp();
@@ -32,15 +34,6 @@ abstract class TestCase extends BaseTestCase
         $this->seedTables();
     }
 
-    public function tearDown()
-    {
-        parent::tearDown();
-    }
-
-    /* ------------------------------------------------------------------------------------------------
-     |  Laravel Functions
-     | ------------------------------------------------------------------------------------------------
-     */
     /**
      * Get package providers.
      *
@@ -111,6 +104,9 @@ abstract class TestCase extends BaseTestCase
         ]);
     }
 
+    /**
+     * Seed the tables.
+     */
     private function seedTables()
     {
         $this->factory->of(User::class)->times(3)->create();
