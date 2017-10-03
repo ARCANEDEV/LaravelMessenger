@@ -347,7 +347,7 @@ class DiscussionTest extends TestCase
         /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion  = $this->factory->create(Discussion::class);
 
-        $discussion->markAsRead(10);
+        $this->assertFalse($discussion->markAsRead(10));
     }
 
     /** @test */

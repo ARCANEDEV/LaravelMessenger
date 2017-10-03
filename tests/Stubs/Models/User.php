@@ -1,7 +1,7 @@
 <?php namespace Arcanedev\LaravelMessenger\Tests\Stubs\Models;
 
 use Arcanedev\LaravelMessenger\Traits\Messagable;
-use Arcanedev\Support\Bases\Model;
+use Arcanedev\Support\Database\Model;
 
 /**
  * Class     User
