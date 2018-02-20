@@ -1,7 +1,7 @@
 <?php namespace Arcanedev\LaravelMessenger\Bases;
 
 use Arcanedev\LaravelMessenger\Traits\ConfigHelper;
-use Arcanedev\Support\Bases\Migration as BaseMigration;
+use Arcanedev\Support\Database\Migration as BaseMigration;
 
 /**
  * Class     Migration

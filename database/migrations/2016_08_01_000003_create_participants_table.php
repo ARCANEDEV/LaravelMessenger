@@ -43,7 +43,7 @@ class CreateParticipantsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('discussion_id');
             $table->unsignedInteger('user_id');
-            $table->dateTime('last_read')->nullable();
+            $table->timestamp('last_read')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
