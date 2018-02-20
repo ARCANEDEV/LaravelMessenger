@@ -24,9 +24,9 @@ class ParticipantTest extends TestCase
         /** @var \Arcanedev\LaravelMessenger\Models\Participant $participant */
         $participant = $this->factory->create(Participant::class);
 
-        $this->assertInstanceOf(Participant::class, $participant);
-        $this->assertInstanceOf(User::class, $participant->user);
-        $this->assertEquals($participant->user_id, $participant->user->id);
+        static::assertInstanceOf(Participant::class, $participant);
+        static::assertInstanceOf(User::class, $participant->user);
+        static::assertEquals($participant->user_id, $participant->user->id);
     }
 
     /** @test */
@@ -35,16 +35,16 @@ class ParticipantTest extends TestCase
         /** @var \Arcanedev\LaravelMessenger\Models\Participant $participant */
         $participant = $this->factory->create(Participant::class, ['discussion_id' => 0]);
 
-        $this->assertNull($participant->discussion);
+        static::assertNull($participant->discussion);
 
         $discussion = $this->factory->create(Discussion::class, [
             'subject' => 'Hello World!',
         ]);
         $participant->discussion()->associate($discussion);
 
-        $this->assertSame($discussion->id, $participant->discussion_id);
-        $this->assertInstanceOf(Discussion::class, $participant->discussion);
-        $this->assertSame($discussion->id, $participant->discussion->id);
-        $this->assertSame('Hello World!', $participant->discussion->subject);
+        static::assertSame($discussion->id, $participant->discussion_id);
+        static::assertInstanceOf(Discussion::class, $participant->discussion);
+        static::assertSame($discussion->id, $participant->discussion->id);
+        static::assertSame('Hello World!', $participant->discussion->subject);
     }
 }

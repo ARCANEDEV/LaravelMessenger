@@ -51,8 +51,8 @@ class MessagableTest extends TestCase
 
         $discussions = $user->discussionsWithNewMessages();
 
-        $this->assertSame(1, $discussions->first()->id);
-        $this->assertSame(1, $user->newMessagesCount());
+        static::assertSame(1, $discussions->first()->id);
+        static::assertSame(1, $user->newMessagesCount());
     }
 
     /** @test */
@@ -70,12 +70,12 @@ class MessagableTest extends TestCase
             $this->factory->make(Participant::class, ['user_id' => 2])
         ]);
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $user->discussions);
-        $this->assertCount(1, $user->discussions);
+        static::assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $user->discussions);
+        static::assertCount(1, $user->discussions);
 
         $firstDiscussion = $user->discussions->first();
 
-        $this->assertInstanceOf(Discussion::class, $firstDiscussion);
+        static::assertInstanceOf(Discussion::class, $firstDiscussion);
     }
 
     /** @test */
@@ -89,7 +89,7 @@ class MessagableTest extends TestCase
             'email' => 'jane@example.com',
         ]);
 
-        $this->assertCount(0, $user->messages);
+        static::assertCount(0, $user->messages);
 
         $this->factory->of(Message::class)->times($count)->create([
             'user_id' => $user->id,
@@ -97,7 +97,7 @@ class MessagableTest extends TestCase
 
         $user->load(['messages']);
 
-        $this->assertCount($count, $user->messages);
+        static::assertCount($count, $user->messages);
     }
 
     /** @test */
@@ -111,7 +111,7 @@ class MessagableTest extends TestCase
             'email' => 'jane@example.com',
         ]);
 
-        $this->assertCount(0, $user->participants);
+        static::assertCount(0, $user->participants);
 
         $this->factory->of(Participant::class)->times($count)->create([
             'user_id' => $user->id
@@ -119,10 +119,10 @@ class MessagableTest extends TestCase
 
         $user->load(['participants']);
 
-        $this->assertCount($count, $user->participants);
+        static::assertCount($count, $user->participants);
         foreach ($user->participants as $participation) {
             /** @var \Arcanedev\LaravelMessenger\Models\Participant $participation */
-            $this->assertSame($user->id, $participation->user_id);
+            static::assertSame($user->id, $participation->user_id);
         }
     }
 }

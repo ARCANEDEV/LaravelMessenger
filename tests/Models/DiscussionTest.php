@@ -29,9 +29,9 @@ class DiscussionTest extends TestCase
             'subject' => 'Hello world'
         ]);
 
-        $this->assertSame('Hello world', $discussion->subject);
-        $this->assertCount(0, $discussion->messages);
-        $this->assertCount(0, $discussion->participants);
+        static::assertSame('Hello world', $discussion->subject);
+        static::assertCount(0, $discussion->messages);
+        static::assertCount(0, $discussion->participants);
     }
 
     /** @test */
@@ -44,8 +44,8 @@ class DiscussionTest extends TestCase
             $this->factory->make(Message::class, ['user_id' => $userId])
         );
 
-        $this->assertInstanceOf(User::class, $discussion->creator);
-        $this->assertEquals($userId, $discussion->creator->id);
+        static::assertInstanceOf(User::class, $discussion->creator);
+        static::assertEquals($userId, $discussion->creator->id);
     }
 
     /** @test */
@@ -56,9 +56,9 @@ class DiscussionTest extends TestCase
         $discussion  = $this->factory->create(Discussion::class);
         $participant = $discussion->addParticipant($userId);
 
-        $this->assertTrue($discussion->hasParticipant($userId));
-        $this->assertCount(1, $discussion->participants);
-        $this->assertEquals(
+        static::assertTrue($discussion->hasParticipant($userId));
+        static::assertCount(1, $discussion->participants);
+        static::assertEquals(
             $discussion->participants->first()->id,
             $participant->id
         );
@@ -73,8 +73,8 @@ class DiscussionTest extends TestCase
         for ($i = 0; $i < 5; $i++) {
             $participant = $discussion->addParticipant(1);
 
-            $this->assertCount(1, $discussion->participants);
-            $this->assertEquals($participant->id, $discussion->participants->first()->id);
+            static::assertCount(1, $discussion->participants);
+            static::assertEquals($participant->id, $discussion->participants->first()->id);
         }
     }
 
@@ -86,13 +86,13 @@ class DiscussionTest extends TestCase
         $discussion   = $this->factory->create(Discussion::class);
         $participants = $discussion->addParticipants($ids);
 
-        $this->assertSame(
+        static::assertSame(
             $discussion->participants->count(),
             $participants->count()
         );
 
         foreach ($discussion->participants as $participant) {
-            $this->assertTrue(in_array($participant->id, $ids));
+            static::assertTrue(in_array($participant->id, $ids));
         }
     }
 
@@ -103,12 +103,12 @@ class DiscussionTest extends TestCase
         $discussion  = $this->factory->create(Discussion::class);
         $discussion->addParticipant(1);
 
-        $this->assertCount(1, $discussion->participants);
+        static::assertCount(1, $discussion->participants);
 
         $deleted = $discussion->removeParticipant(1);
 
-        $this->assertSame(1, $deleted);
-        $this->assertCount(0, $discussion->participants);
+        static::assertSame(1, $deleted);
+        static::assertCount(0, $discussion->participants);
     }
 
     /** @test */
@@ -118,12 +118,12 @@ class DiscussionTest extends TestCase
         $discussion  = $this->factory->create(Discussion::class);
         $discussion->addParticipant(1);
 
-        $this->assertCount(1, $discussion->participants);
+        static::assertCount(1, $discussion->participants);
 
         $deleted = $discussion->removeParticipant(1, false);
 
-        $this->assertSame(1, $deleted);
-        $this->assertCount(1, $discussion->participants);
+        static::assertSame(1, $deleted);
+        static::assertCount(1, $discussion->participants);
     }
 
     /** @test */
@@ -134,16 +134,16 @@ class DiscussionTest extends TestCase
         $discussion   = $this->factory->create(Discussion::class);
         $participants = $discussion->addParticipants($ids);
 
-        $this->assertCount(count($ids), $discussion->participants);
-        $this->assertSame(
+        static::assertCount(count($ids), $discussion->participants);
+        static::assertSame(
             $discussion->participants->count(),
             $participants->count()
         );
 
         $deleted = $discussion->removeParticipants($ids);
 
-        $this->assertSame(count($ids), $deleted);
-        $this->assertCount(0, $discussion->participants);
+        static::assertSame(count($ids), $deleted);
+        static::assertCount(0, $discussion->participants);
     }
 
     /** @test */
@@ -154,16 +154,16 @@ class DiscussionTest extends TestCase
         $discussion   = $this->factory->create(Discussion::class);
         $participants = $discussion->addParticipants($ids);
 
-        $this->assertCount(count($ids), $discussion->participants);
-        $this->assertSame(
+        static::assertCount(count($ids), $discussion->participants);
+        static::assertSame(
             $participants->count(),
             $discussion->participants->count()
         );
 
         $deleted = $discussion->removeParticipants($ids, false);
 
-        $this->assertSame(count($ids), $deleted);
-        $this->assertCount(
+        static::assertSame(count($ids), $deleted);
+        static::assertCount(
             $participants->count(),
             $discussion->participants
         );
@@ -177,20 +177,20 @@ class DiscussionTest extends TestCase
         $discussion   = $this->factory->create(Discussion::class);
         $participants = $discussion->addParticipants($ids);
 
-        $this->assertCount(count($ids), $discussion->participants);
-        $this->assertSame(
+        static::assertCount(count($ids), $discussion->participants);
+        static::assertSame(
             $participants->count(),
             $discussion->participants->count()
         );
 
         $deleted = $discussion->removeParticipants($ids, false);
 
-        $this->assertSame(count($ids), $deleted);
-        $this->assertCount($participants->count(), $discussion->participants);
+        static::assertSame(count($ids), $deleted);
+        static::assertCount($participants->count(), $discussion->participants);
 
         $trashed = $discussion->getTrashedParticipants();
 
-        $this->assertCount($deleted, $trashed);
+        static::assertCount($deleted, $trashed);
     }
 
     /** @test */
@@ -201,18 +201,18 @@ class DiscussionTest extends TestCase
         $discussion   = $this->factory->create(Discussion::class);
         $discussion->addParticipants($ids);
 
-        $this->assertCount(count($ids), $discussion->participants);
+        static::assertCount(count($ids), $discussion->participants);
 
         $deleted = $discussion->removeParticipants($ids);
         $trashed = $discussion->getTrashedParticipants();
 
-        $this->assertCount($deleted, $trashed);
-        $this->assertTrue($discussion->participants->isEmpty());
+        static::assertCount($deleted, $trashed);
+        static::assertTrue($discussion->participants->isEmpty());
 
         $restored = $discussion->restoreAllParticipants();
 
-        $this->assertSame($deleted, $restored);
-        $this->assertFalse($discussion->participants->isEmpty());
+        static::assertSame($deleted, $restored);
+        static::assertFalse($discussion->participants->isEmpty());
     }
 
     /** @test */
@@ -225,14 +225,14 @@ class DiscussionTest extends TestCase
             $this->factory->make(Participant::class, ['user_id' => $userId, 'last_read' => Carbon::now()])
         );
 
-        $this->assertFalse($discussion->isUnread($userId));
+        static::assertFalse($discussion->isUnread($userId));
 
         $discussion = $this->factory->create(Discussion::class, ['subject' => 'Second Thread', 'updated_at' => Carbon::now()]);
         $discussion->participants()->save(
             $this->factory->make(Participant::class, ['user_id' => $userId, 'last_read' => Carbon::yesterday()])
         );
 
-        $this->assertTrue($discussion->isUnread($userId));
+        static::assertTrue($discussion->isUnread($userId));
     }
 
     /** @test */
@@ -247,10 +247,10 @@ class DiscussionTest extends TestCase
         $discussion->participants()->saveMany($participants);
 
         foreach ($ids as $id) {
-            $this->assertTrue($discussion->hasParticipant($id));
+            static::assertTrue($discussion->hasParticipant($id));
         }
 
-        $this->assertFalse($discussion->hasParticipant(99));
+        static::assertFalse($discussion->hasParticipant(99));
     }
 
     /** @test */
@@ -265,7 +265,7 @@ class DiscussionTest extends TestCase
 
         $participant = $discussion->getParticipantByUserId($userId);
 
-        $this->assertInstanceOf(Participant::class, $participant);
+        static::assertInstanceOf(Participant::class, $participant);
     }
 
     /** @test */
@@ -277,13 +277,13 @@ class DiscussionTest extends TestCase
         $participants = $discussion->addParticipants($ids);
 
         $rendered = $discussion->participantsString();
-        $this->assertContains(', ', $rendered);
-        $this->assertCount($participants->count(), explode(', ', $rendered));
+        static::assertContains(', ', $rendered);
+        static::assertCount($participants->count(), explode(', ', $rendered));
 
         $rendered = $discussion->participantsString(2);
 
-        $this->assertContains(', ', $rendered);
-        $this->assertCount($participants->count() - 1, explode(', ', $rendered));
+        static::assertContains(', ', $rendered);
+        static::assertCount($participants->count() - 1, explode(', ', $rendered));
     }
 
     /** @test */
@@ -299,18 +299,18 @@ class DiscussionTest extends TestCase
 
         $rendered = $discussion->participantsString(null, $callback);
 
-        $this->assertContains(', ', $rendered);
-        $this->assertCount($participants->count(), explode(', ', $rendered));
+        static::assertContains(', ', $rendered);
+        static::assertCount($participants->count(), explode(', ', $rendered));
         foreach (explode(', ', $rendered) as $info) {
-            $this->assertStringStartsWith('#', $info);
+            static::assertStringStartsWith('#', $info);
         }
 
         $rendered = $discussion->participantsString(2, $callback);
 
-        $this->assertContains(', ', $rendered);
-        $this->assertCount($participants->count() - 1, explode(', ', $rendered));
+        static::assertContains(', ', $rendered);
+        static::assertCount($participants->count() - 1, explode(', ', $rendered));
         foreach (explode(', ', $rendered) as $info) {
-            $this->assertStringStartsWith('#', $info);
+            static::assertStringStartsWith('#', $info);
         }
     }
 
@@ -321,15 +321,15 @@ class DiscussionTest extends TestCase
         $discussion  = $this->factory->create(Discussion::class);
         $participant = $discussion->addParticipant(1);
 
-        $this->assertCount(1, $discussion->participants);
-        $this->assertEquals(
+        static::assertCount(1, $discussion->participants);
+        static::assertEquals(
             $discussion->participants->first()->id,
             $participant->id
         );
 
         /** @var \Arcanedev\LaravelMessenger\Models\Participant  $participant */
         foreach ($discussion->participants as $participant) {
-            $this->assertNull($participant->last_read);
+            static::assertNull($participant->last_read);
             $discussion->markAsRead($participant->user_id);
         }
 
@@ -337,7 +337,7 @@ class DiscussionTest extends TestCase
 
         /** @var \Arcanedev\LaravelMessenger\Models\Participant  $participant */
         foreach ($discussion->participants as $participant) {
-            $this->assertNotNull($participant->last_read);
+            static::assertNotNull($participant->last_read);
         }
     }
 
@@ -347,7 +347,7 @@ class DiscussionTest extends TestCase
         /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion  = $this->factory->create(Discussion::class);
 
-        $this->assertFalse($discussion->markAsRead(10));
+        static::assertFalse($discussion->markAsRead(10));
     }
 
     /** @test */
@@ -357,12 +357,12 @@ class DiscussionTest extends TestCase
         $discussion  = $this->factory->create(Discussion::class);
         $participant = $discussion->addParticipant(1);
 
-        $this->assertCount(1, $discussion->participants);
-        $this->assertTrue($discussion->isUnread($participant->user_id));
+        static::assertCount(1, $discussion->participants);
+        static::assertTrue($discussion->isUnread($participant->user_id));
 
         $discussion->markAsRead($participant->user_id);
 
-        $this->assertFalse($discussion->isUnread($participant->user_id));
+        static::assertFalse($discussion->isUnread($participant->user_id));
     }
 
     /** @test */
@@ -377,12 +377,12 @@ class DiscussionTest extends TestCase
         sleep(1);
         $discussion->messages()->save($this->factory->make(Message::class));
 
-        $this->assertCount(3, $discussion->messages);
+        static::assertCount(3, $discussion->messages);
 
         $latestMessage = $discussion->latest_message;
 
-        $this->assertInstanceOf(Message::class, $latestMessage);
-        $this->assertEquals(3, $latestMessage->id);
+        static::assertInstanceOf(Message::class, $latestMessage);
+        static::assertEquals(3, $latestMessage->id);
     }
 
     /** @test */
@@ -399,7 +399,7 @@ class DiscussionTest extends TestCase
 
         $discussions = Discussion::getLatest();
 
-        $this->assertCount(5, $discussions);
+        static::assertCount(5, $discussions);
 
         /**
          * @var \Arcanedev\LaravelMessenger\Models\Discussion  $first
@@ -408,8 +408,8 @@ class DiscussionTest extends TestCase
         $first = $discussions->first();
         $last  = $discussions->last();
 
-        $this->assertTrue($first->created_at->eq($last->created_at));
-        $this->assertTrue($first->updated_at->gt($last->updated_at));
+        static::assertTrue($first->created_at->eq($last->created_at));
+        static::assertTrue($first->updated_at->gt($last->updated_at));
     }
 
     /** @test */
@@ -425,8 +425,8 @@ class DiscussionTest extends TestCase
             $this->factory->create(Discussion::class, $attribute);
         }
 
-        $this->assertCount(2, Discussion::getBySubject('Hello'));
-        $this->assertCount(1, Discussion::getBySubject('Hi'));
+        static::assertCount(2, Discussion::getBySubject('Hello'));
+        static::assertCount(1, Discussion::getBySubject('Hi'));
     }
 
     /** @test */
@@ -441,8 +441,8 @@ class DiscussionTest extends TestCase
             $this->factory->create(Discussion::class, $attribute);
         }
 
-        $this->assertCount(0, Discussion::getBySubject('Hello', true));
-        $this->assertCount(1, Discussion::getBySubject('Hello Laravel', true));
+        static::assertCount(0, Discussion::getBySubject('Hello', true));
+        static::assertCount(1, Discussion::getBySubject('Hello Laravel', true));
     }
 
     /** @test */
@@ -455,23 +455,23 @@ class DiscussionTest extends TestCase
 
         $usersIds = $discussion->participantsUserIds();
 
-        $this->assertInstanceOf(Collection::class, $usersIds);
-        $this->assertCount(count($ids), $usersIds);
-        $this->assertEquals($ids, $usersIds->toArray());
+        static::assertInstanceOf(Collection::class, $usersIds);
+        static::assertCount(count($ids), $usersIds);
+        static::assertEquals($ids, $usersIds->toArray());
 
         // Ignore the user id if exists
         $usersIds = $discussion->participantsUserIds(3);
 
-        $this->assertInstanceOf(Collection::class, $usersIds);
-        $this->assertCount(count($ids), $usersIds);
-        $this->assertEquals($ids, $usersIds->toArray());
+        static::assertInstanceOf(Collection::class, $usersIds);
+        static::assertCount(count($ids), $usersIds);
+        static::assertEquals($ids, $usersIds->toArray());
 
         $ids[]    = 4;
         $usersIds = $discussion->participantsUserIds(4);
 
-        $this->assertInstanceOf(Collection::class, $usersIds);
-        $this->assertCount(count($ids), $usersIds);
-        $this->assertEquals($ids, $usersIds->toArray());
+        static::assertInstanceOf(Collection::class, $usersIds);
+        static::assertCount(count($ids), $usersIds);
+        static::assertEquals($ids, $usersIds->toArray());
     }
 
     /** @test */
@@ -497,7 +497,7 @@ class DiscussionTest extends TestCase
 
         $discussions = Discussion::between([$userIdOne, $userIdTwo])->get();
 
-        $this->assertCount(1, $discussions);
+        static::assertCount(1, $discussions);
     }
 
     /** @test */
@@ -520,7 +520,7 @@ class DiscussionTest extends TestCase
 
         $discussions = Discussion::forUser($userId)->with(['participants'])->get();
 
-        $this->assertCount(2, $discussions);
+        static::assertCount(2, $discussions);
     }
 
     /** @test */
@@ -536,8 +536,8 @@ class DiscussionTest extends TestCase
 
         $discussionUsers = $discussion->users()->get();
 
-        $this->assertCount(2, $discussionUsers);
-        $this->assertSame([1, 2], $discussionUsers->pluck('id')->toArray());
+        static::assertCount(2, $discussionUsers);
+        static::assertSame([1, 2], $discussionUsers->pluck('id')->toArray());
     }
 
     /** @test */
@@ -556,7 +556,7 @@ class DiscussionTest extends TestCase
 
         $discussions = Discussion::forUserWithNewMessages($userId)->get();
 
-        $this->assertCount(1, $discussions);
+        static::assertCount(1, $discussions);
     }
 
     /** @test */
@@ -581,15 +581,15 @@ class DiscussionTest extends TestCase
 
         $messages = $discussion->userUnreadMessages(1);
 
-        $this->assertInstanceOf(Collection::class, $messages);
-        $this->assertCount(2, $messages);
-        $this->assertEquals('Message 1', $messages->first()->body);
+        static::assertInstanceOf(Collection::class, $messages);
+        static::assertCount(2, $messages);
+        static::assertEquals('Message 1', $messages->first()->body);
 
         $messages = $discussion->userUnreadMessages(2);
 
-        $this->assertInstanceOf(Collection::class, $messages);
-        $this->assertCount(1, $messages);
-        $this->assertEquals('Message 2', $messages->first()->body);
+        static::assertInstanceOf(Collection::class, $messages);
+        static::assertCount(1, $messages);
+        static::assertEquals('Message 2', $messages->first()->body);
     }
 
     /** @test */
@@ -616,13 +616,13 @@ class DiscussionTest extends TestCase
             $this->factory->make(Message::class, ['body' => 'Message 2', 'created_at' => Carbon::now()])
         );
 
-        $this->assertCount(2, $discussion->userUnreadMessages($participantOne->user_id));
-        $this->assertCount(1, $discussion->userUnreadMessages($participantTwo->user_id));
+        static::assertCount(2, $discussion->userUnreadMessages($participantOne->user_id));
+        static::assertCount(1, $discussion->userUnreadMessages($participantTwo->user_id));
 
         // it must return empty unread messages collection with invalid participant id
         $messages = $discussion->userUnreadMessages(0);
 
-        $this->assertInstanceOf(Collection::class, $messages);
-        $this->assertCount(0, $messages);
+        static::assertInstanceOf(Collection::class, $messages);
+        static::assertCount(0, $messages);
     }
 }

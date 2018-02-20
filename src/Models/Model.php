@@ -1,7 +1,7 @@
 <?php namespace Arcanedev\LaravelMessenger\Models;
 
 use Arcanedev\LaravelMessenger\Traits\ConfigHelper;
-use Arcanedev\Support\Bases\Model as BaseModel;
+use Arcanedev\Support\Database\Model as BaseModel;
 
 /**
  * Class     Model

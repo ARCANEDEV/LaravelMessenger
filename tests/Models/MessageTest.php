@@ -30,8 +30,8 @@ class MessageTest extends TestCase
 
         $discussion->messages()->save($message);
 
-        $this->assertInstanceOf(Discussion::class, $message->discussion);
-        $this->assertSame($discussion->id, $message->discussion->id);
+        static::assertInstanceOf(Discussion::class, $message->discussion);
+        static::assertSame($discussion->id, $message->discussion->id);
     }
 
     /** @test */
@@ -43,7 +43,7 @@ class MessageTest extends TestCase
 
         $discussion->messages()->saveMany($messages);
 
-        $this->assertCount(3, $discussion->messages);
+        static::assertCount(3, $discussion->messages);
     }
 
     /** @test */
@@ -58,7 +58,7 @@ class MessageTest extends TestCase
 
         $discussion->messages()->save($message);
 
-        $this->assertEquals(2, $message->author->id);
+        static::assertEquals(2, $message->author->id);
     }
 
     /** @test */
@@ -75,13 +75,13 @@ class MessageTest extends TestCase
             $this->factory->make(Participant::class, ['user_id' => 3])
         ]);
 
-        $this->assertTrue($message->participants > $message->recipients);
-        $this->assertCount(3, $message->participants);
-        $this->assertCount(2, $message->recipients);
+        static::assertTrue($message->participants > $message->recipients);
+        static::assertCount(3, $message->participants);
+        static::assertCount(2, $message->recipients);
 
         foreach ($message->recipients as $recipient) {
             /** @var \Arcanedev\LaravelMessenger\Models\Participant $recipient */
-            $this->assertInstanceOf(Participant::class, $recipient);
+            static::assertInstanceOf(Participant::class, $recipient);
         }
     }
 }
