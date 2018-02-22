@@ -1,8 +1,8 @@
 <?php namespace Arcanedev\LaravelMessenger\Tests;
 
 use Arcanedev\LaravelMessenger\Tests\Stubs\Models\User;
-use Orchestra\Testbench\TestCase as BaseTestCase;
 use Illuminate\Database\Eloquent\Factory as ModelFactory;
+use Orchestra\Testbench\TestCase as BaseTestCase;
 
 /**
  * Class     TestCase
@@ -44,7 +44,6 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app)
     {
         return [
-            \Orchestra\Database\ConsoleServiceProvider::class,
             \Arcanedev\LaravelMessenger\LaravelMessengerServiceProvider::class,
         ];
     }
@@ -91,15 +90,8 @@ abstract class TestCase extends BaseTestCase
      */
     protected function migrate()
     {
-        $this->artisan('migrate', [
-            '--database' => 'testing',
-            '--realpath' => realpath(__DIR__.'/../database/migrations'),
-        ]);
-
-        $this->artisan('migrate', [
-            '--database' => 'testing',
-            '--realpath' => realpath(__DIR__.'/fixtures/migrations'),
-        ]);
+        $this->loadMigrationsFrom(realpath(__DIR__.'/../database/migrations'));
+        $this->loadMigrationsFrom(realpath(__DIR__.'/fixtures/migrations'));
     }
 
     /**
