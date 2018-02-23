@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
  *
  * @property  int                                       id
  * @property  \Illuminate\Database\Eloquent\Collection  discussions
- * @property  \Illuminate\Database\Eloquent\Collection  participants
+ * @property  \Illuminate\Database\Eloquent\Collection  participations
  * @property  \Illuminate\Database\Eloquent\Collection  messages
  */
 trait Messagable
@@ -35,23 +35,23 @@ trait Messagable
      */
     public function discussions()
     {
-        return $this->belongsToMany(
+        return $this->morphToMany(
             $this->getModelFromConfig('discussions', Models\Discussion::class),
-            $this->getTableFromConfig('participants', 'participants'),
-            'user_id',
-            'discussion_id'
+            'participable',
+            $this->getTableFromConfig('participations', 'participations')
         );
     }
 
     /**
-     * Participants relationship.
+     * Participations relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function participants()
+    public function participations()
     {
-        return $this->hasMany(
-            $this->getModelFromConfig('participants', Models\Participant::class)
+        return $this->morphMany(
+            $this->getModelFromConfig('participations', Models\Participation::class),
+            'participable'
         );
     }
 
@@ -62,8 +62,9 @@ trait Messagable
      */
     public function messages()
     {
-        return $this->hasMany(
-            $this->getModelFromConfig('messages', Models\Message::class)
+        return $this->morphMany(
+            $this->getModelFromConfig('messages', Models\Message::class),
+            'participable'
         );
     }
 
@@ -89,13 +90,13 @@ trait Messagable
      */
     public function discussionsWithNewMessages()
     {
-        $participantsTable = $this->getTableFromConfig('participants', 'participants');
-        $discussionsTable  = $this->getTableFromConfig('discussions', 'discussions');
+        $participationsTable = $this->getTableFromConfig('participations', 'participations');
+        $discussionsTable    = $this->getTableFromConfig('discussions', 'discussions');
 
-        return $this->discussions()->where(function (Builder $query) use ($participantsTable, $discussionsTable) {
-            $query->whereNull("$participantsTable.last_read");
+        return $this->discussions()->where(function (Builder $query) use ($participationsTable, $discussionsTable) {
+            $query->whereNull("$participationsTable.last_read");
             $query->orWhere(
-                "$discussionsTable.updated_at", '>', $this->getConnection()->raw("$participantsTable.last_read")
+                "$discussionsTable.updated_at", '>', $this->getConnection()->raw("$participationsTable.last_read")
             );
         })->get();
     }
@@ -115,6 +116,7 @@ trait Messagable
      * @param  string  $parentKey
      * @param  string  $relatedKey
      * @param  string  $relation
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     abstract public function belongsToMany($related, $table = null, $foreignPivotKey = null, $relatedPivotKey = null,

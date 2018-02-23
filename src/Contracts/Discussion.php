@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelMessenger\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Interface  Discussion
@@ -16,13 +17,13 @@ use Illuminate\Database\Eloquent\Builder;
  *
  * @property  \Illuminate\Database\Eloquent\Model         creator
  * @property  \Illuminate\Database\Eloquent\Collection    messages
- * @property  \Illuminate\Database\Eloquent\Collection    participants
+ * @property  \Illuminate\Database\Eloquent\Collection    participations
  * @property  \Arcanedev\LaravelMessenger\Models\Message  latest_message
  *
- * @method static \Illuminate\Database\Eloquent\Builder  subject(string $subject, bool $strict)
- * @method static \Illuminate\Database\Eloquent\Builder  between(array $usersIds)
- * @method static \Illuminate\Database\Eloquent\Builder  forUser(int $userId)
- * @method static \Illuminate\Database\Eloquent\Builder  forUserWithNewMessages(int $userId)
+ * @method static  \Illuminate\Database\Eloquent\Builder  subject(string $subject, bool $strict)
+ * @method static  \Illuminate\Database\Eloquent\Builder  between(array $participablesIds)
+ * @method static  \Illuminate\Database\Eloquent\Builder  forUser(int $participableId)
+ * @method static  \Illuminate\Database\Eloquent\Builder  forUserWithNewMessages(int $participableId)
  */
 interface Discussion
 {
@@ -32,11 +33,11 @@ interface Discussion
      */
 
     /**
-     * Participants relationship.
+     * Participations relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function participants();
+    public function participations();
 
     /**
      * Messages relationship.
@@ -46,14 +47,7 @@ interface Discussion
     public function messages();
 
     /**
-     * User's relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function users();
-
-    /**
-     * Get the user that created the first message.
+     * Get the participable that created the first message.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -65,34 +59,34 @@ interface Discussion
      */
 
     /**
-     * Scope discussions that the user is associated with.
+     * Scope discussions that the participable is associated with.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  int                                    $userId
+     * @param  \Illuminate\Database\Eloquent\Model    $participable
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeForUser(Builder $query, $userId);
+    public function scopeForUser(Builder $query, Model $participable);
 
     /**
-     * Scope discussions with new messages that the user is associated with.
+     * Scope discussions with new messages that the participable is associated with.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  int                                    $userId
+     * @param  \Illuminate\Database\Eloquent\Model    $participable
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeForUserWithNewMessages(Builder $query, $userId);
+    public function scopeForUserWithNewMessages(Builder $query, Model $participable);
 
     /**
-     * Scope discussions between given user ids.
+     * Scope discussions between given participables.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  array                                  $userIds
+     * @param  \Illuminate\Support\Collection|array   $participables
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeBetween(Builder $query, array $userIds);
+    public function scopeBetween(Builder $query, $participables);
 
     /**
      * Scope the query by the subject.
@@ -140,121 +134,118 @@ interface Discussion
     public static function getBySubject($subject, $strict = false);
 
     /**
-     * Returns an array of user ids that are associated with the discussion.
-     *
-     * @param  int|null  $userId
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function participantsUserIds($userId = null);
-
-    /**
-     * Add a user to discussion as a participant.
-     *
-     * @param  int  $userId
-     *
-     * @return \Arcanedev\LaravelMessenger\Models\Participant
-     */
-    public function addParticipant($userId);
-
-    /**
-     * Add users to discussion as participants.
-     *
-     * @param  array  $userIds
+     * Returns an array of participables that are associated with the discussion.
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function addParticipants(array $userIds);
+    public function getParticipables();
 
     /**
-     * Remove a participant from discussion.
+     * Add a participable to discussion.
      *
-     * @param  int   $userId
-     * @param  bool  $reload
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
+     *
+     * @return \Arcanedev\LaravelMessenger\Models\Participation
+     */
+    public function addParticipant(Model $participable);
+
+    /**
+     * Add many participables to discussion.
+     *
+     * @param  \Illuminate\Support\Collection|array  $participables
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function addParticipants($participables);
+
+    /**
+     * Remove a participable from discussion.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
+     * @param  bool                                 $reload
      *
      * @return int
      */
-    public function removeParticipant($userId, $reload = true);
+    public function removeParticipant(Model $participable, $reload = true);
 
     /**
-     * Remove participants from discussion.
+     * Remove many participables from discussion.
      *
-     * @param  array  $userIds
+     * @param  \Illuminate\Support\Collection|array  $participables
      * @param  bool   $reload
      *
      * @return int
      */
-    public function removeParticipants(array $userIds, $reload = true);
+    public function removeParticipants($participables, $reload = true);
 
     /**
-     * Mark a discussion as read for a user.
+     * Mark a discussion as read for a participable.
      *
-     * @param  int  $userId
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
      *
      * @return bool|int
      */
-    public function markAsRead($userId);
+    public function markAsRead(Model $participable);
 
     /**
-     * See if the current thread is unread by the user.
+     * See if the current thread is unread by the participable.
      *
-     * @param  int  $userId
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
      *
      * @return bool
      */
-    public function isUnread($userId);
+    public function isUnread(Model $participable);
 
     /**
-     * Finds the participant record from a user id.
+     * Finds the participation record from a participable model.
      *
-     * @param  int  $userId
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
      *
-     * @return \Arcanedev\LaravelMessenger\Models\Participant
+     * @return \Arcanedev\LaravelMessenger\Models\Participation|mixed
      */
-    public function getParticipantByUserId($userId);
+    public function getParticipationByParticipable(Model $participable);
 
     /**
-     * Get the trashed participants.
+     * Get the trashed participations.
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getTrashedParticipants();
+    public function getTrashedParticipations();
 
     /**
-     * Restores all participants within a discussion.
+     * Restores all participations within a discussion.
      *
      * @param  bool  $reload
      *
      * @return int
      */
-    public function restoreAllParticipants($reload = true);
+    public function restoreAllParticipations($reload = true);
 
     /**
-     * Generates a participant information as a string.
+     * Generates a participation information as a string.
      *
-     * @param  int|null       $ignoredUserId
      * @param  \Closure|null  $callback
      * @param  string         $glue
      *
      * @return string
      */
-    public function participantsString($ignoredUserId = null, $callback = null, $glue = ', ');
+    public function participationsString($callback = null, $glue = ', ');
 
     /**
-     * Checks to see if a user is a current participant of the discussion.
+     * Checks to see if a participable is a current participation of the discussion.
      *
-     * @param  int  $userId
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
      *
      * @return bool
      */
-    public function hasParticipant($userId);
+    public function hasParticipation(Model $participable);
 
     /**
-     * Returns array of unread messages in discussion for given user.
+     * Get the unread messages in discussion for a specific participable.
      *
-     * @param  int  $userId
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
      *
      * @return \Illuminate\Support\Collection
      */
-    public function userUnreadMessages($userId);
+    public function getUnreadMessages(Model $participable);
 }

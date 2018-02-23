@@ -42,7 +42,7 @@ class CreateMessagesTable extends Migration
         $this->createSchema(function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('discussion_id');
-            $table->unsignedInteger('user_id');
+            $table->morphs('participable');
             $table->text('body');
             $table->timestamps();
         });

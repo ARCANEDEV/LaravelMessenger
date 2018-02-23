@@ -15,7 +15,7 @@
  * @property  int                                            body
  * @property  \Carbon\Carbon                                 created_at
  * @property  \Carbon\Carbon                                 updated_at
- * @property  \Illuminate\Database\Eloquent\Collection       participants
+ * @property  \Illuminate\Database\Eloquent\Collection       participations
  * @property  \Illuminate\Database\Eloquent\Collection       recipients
  */
 interface Message
@@ -40,18 +40,18 @@ interface Message
     public function author();
 
     /**
-     * User/Author relationship.
+     * Participable relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function user();
+    public function participable();
 
     /**
-     * Participants relationship.
+     * Participations relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function participants();
+    public function participations();
 
     /* -----------------------------------------------------------------
      |  Getters & Setters

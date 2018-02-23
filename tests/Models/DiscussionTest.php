@@ -2,7 +2,7 @@
 
 use Arcanedev\LaravelMessenger\Models\Discussion;
 use Arcanedev\LaravelMessenger\Models\Message;
-use Arcanedev\LaravelMessenger\Models\Participant;
+use Arcanedev\LaravelMessenger\Models\Participation;
 use Arcanedev\LaravelMessenger\Tests\Stubs\Models\User;
 use Arcanedev\LaravelMessenger\Tests\TestCase;
 use Carbon\Carbon;
@@ -31,35 +31,34 @@ class DiscussionTest extends TestCase
 
         static::assertSame('Hello world', $discussion->subject);
         static::assertCount(0, $discussion->messages);
-        static::assertCount(0, $discussion->participants);
+        static::assertCount(0, $discussion->participations);
     }
 
     /** @test */
     public function it_can_get_the_creator()
     {
-        $userId = 1;
         /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion = $this->factory->create(Discussion::class);
         $discussion->messages()->save(
-            $this->factory->make(Message::class, ['user_id' => $userId])
+            $this->factory->make(Message::class)
         );
 
         static::assertInstanceOf(User::class, $discussion->creator);
-        static::assertEquals($userId, $discussion->creator->id);
+        static::assertEquals(1, $discussion->creator->id);
     }
 
     /** @test */
     public function it_can_add_a_participant()
     {
         /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $userId      = 1;
-        $discussion  = $this->factory->create(Discussion::class);
-        $participant = $discussion->addParticipant($userId);
+        $user         = $this->users->first();
+        $discussion   = $this->factory->create(Discussion::class);
+        $participant  = $discussion->addParticipant($user);
 
-        static::assertTrue($discussion->hasParticipant($userId));
-        static::assertCount(1, $discussion->participants);
+        static::assertTrue($discussion->hasParticipation($user));
+        static::assertCount(1, $discussion->participations);
         static::assertEquals(
-            $discussion->participants->first()->id,
+            $discussion->participations->first()->id,
             $participant->id
         );
     }
@@ -68,127 +67,129 @@ class DiscussionTest extends TestCase
     public function it_can_add_participant_without_duplication()
     {
         /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $discussion  = $this->factory->create(Discussion::class);
+        $user       = $this->users->first();
+        $discussion = $this->factory->create(Discussion::class);
 
         for ($i = 0; $i < 5; $i++) {
-            $participant = $discussion->addParticipant(1);
+            $participant = $discussion->addParticipant($user);
 
-            static::assertCount(1, $discussion->participants);
-            static::assertEquals($participant->id, $discussion->participants->first()->id);
+            static::assertCount(1, $discussion->participations);
+            static::assertEquals($participant->id, $discussion->participations->first()->id);
         }
     }
 
     /** @test */
     public function it_can_add_multiple_participants()
     {
-        /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $ids          = [1, 2, 3];
+        /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
-        $participants = $discussion->addParticipants($ids);
+        $participants = $discussion->addParticipants($this->users);
 
         static::assertSame(
-            $discussion->participants->count(),
+            $discussion->participations->count(),
             $participants->count()
         );
 
-        foreach ($discussion->participants as $participant) {
-            static::assertTrue(in_array($participant->id, $ids));
-        }
+        static::assertSame(
+            $discussion->participations->pluck('participable_id')->toArray(),
+            $this->users->pluck('id')->toArray()
+        );
     }
 
     /** @test */
     public function it_can_remove_a_participant()
     {
-        /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
+        /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion  = $this->factory->create(Discussion::class);
-        $discussion->addParticipant(1);
+        $discussion->addParticipant(
+            $user = $this->users->first()
+        );
 
-        static::assertCount(1, $discussion->participants);
+        static::assertCount(1, $discussion->participations);
 
-        $deleted = $discussion->removeParticipant(1);
+        $deleted = $discussion->removeParticipant($user);
 
         static::assertSame(1, $deleted);
-        static::assertCount(0, $discussion->participants);
+        static::assertCount(0, $discussion->participations);
     }
 
     /** @test */
     public function it_can_remove_a_participant_without_reloading_the_collection()
     {
-        /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $discussion  = $this->factory->create(Discussion::class);
-        $discussion->addParticipant(1);
+        /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
+        $discussion = $this->factory->create(Discussion::class);
+        $discussion->addParticipant(
+            $user = $this->users->first()
+        );
 
-        static::assertCount(1, $discussion->participants);
+        static::assertCount(1, $discussion->participations);
 
-        $deleted = $discussion->removeParticipant(1, false);
+        $deleted = $discussion->removeParticipant($user, false);
 
         static::assertSame(1, $deleted);
-        static::assertCount(1, $discussion->participants);
+        static::assertCount(1, $discussion->participations);
     }
 
     /** @test */
     public function it_can_remove_multiple_participants()
     {
-        /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $ids          = [1, 2, 3];
+        /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
-        $participants = $discussion->addParticipants($ids);
+        $participants = $discussion->addParticipants($this->users);
 
-        static::assertCount(count($ids), $discussion->participants);
+        static::assertCount($this->users->count(), $discussion->participations);
         static::assertSame(
-            $discussion->participants->count(),
+            $discussion->participations->count(),
             $participants->count()
         );
 
-        $deleted = $discussion->removeParticipants($ids);
+        $deleted = $discussion->removeParticipants($this->users);
 
-        static::assertSame(count($ids), $deleted);
-        static::assertCount(0, $discussion->participants);
+        static::assertSame($this->users->count(), $deleted);
+        static::assertCount(0, $discussion->participations);
     }
 
     /** @test */
     public function it_can_remove_multiple_participants_without_reloading_the_collection()
     {
-        /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $ids          = [1, 2, 3];
+        /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
-        $participants = $discussion->addParticipants($ids);
+        $participants = $discussion->addParticipants($this->users);
 
-        static::assertCount(count($ids), $discussion->participants);
+        static::assertCount($this->users->count(), $discussion->participations);
         static::assertSame(
             $participants->count(),
-            $discussion->participants->count()
+            $discussion->participations->count()
         );
 
-        $deleted = $discussion->removeParticipants($ids, false);
+        $deleted = $discussion->removeParticipants($this->users, false);
 
-        static::assertSame(count($ids), $deleted);
+        static::assertSame($this->users->count(), $deleted);
         static::assertCount(
             $participants->count(),
-            $discussion->participants
+            $discussion->participations
         );
     }
 
     /** @test */
     public function it_can_get_trashed_participants()
     {
-        /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $ids          = [1, 2, 3];
+        /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
-        $participants = $discussion->addParticipants($ids);
+        $participants = $discussion->addParticipants($this->users);
 
-        static::assertCount(count($ids), $discussion->participants);
+        static::assertCount($this->users->count(), $discussion->participations);
         static::assertSame(
             $participants->count(),
-            $discussion->participants->count()
+            $discussion->participations->count()
         );
 
-        $deleted = $discussion->removeParticipants($ids, false);
+        $deleted = $discussion->removeParticipants($this->users, false);
 
-        static::assertSame(count($ids), $deleted);
-        static::assertCount($participants->count(), $discussion->participants);
+        static::assertSame($this->users->count(), $deleted);
+        static::assertCount($participants->count(), $discussion->participations);
 
-        $trashed = $discussion->getTrashedParticipants();
+        $trashed = $discussion->getTrashedParticipations();
 
         static::assertCount($deleted, $trashed);
     }
@@ -196,147 +197,139 @@ class DiscussionTest extends TestCase
     /** @test */
     public function it_can_restore_all_trashed_participants()
     {
-        /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $ids          = [1, 2, 3];
+        /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
-        $discussion->addParticipants($ids);
+        $discussion->addParticipants($this->users);
 
-        static::assertCount(count($ids), $discussion->participants);
+        static::assertCount($this->users->count(), $discussion->participations);
 
-        $deleted = $discussion->removeParticipants($ids);
-        $trashed = $discussion->getTrashedParticipants();
+        $deleted = $discussion->removeParticipants($this->users);
+        $trashed = $discussion->getTrashedParticipations();
 
         static::assertCount($deleted, $trashed);
-        static::assertTrue($discussion->participants->isEmpty());
+        static::assertTrue($discussion->participations->isEmpty());
 
-        $restored = $discussion->restoreAllParticipants();
+        $restored = $discussion->restoreAllParticipations();
 
         static::assertSame($deleted, $restored);
-        static::assertFalse($discussion->participants->isEmpty());
+        static::assertFalse($discussion->participations->isEmpty());
     }
 
     /** @test */
     public function it_can_see_if_discussion_is_unread_by_user()
     {
-        /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $userId     = 1;
+        /**
+         * @var \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $user
+         * @var \Arcanedev\LaravelMessenger\Models\Discussion        $discussion
+         */
+        $user       = $this->users->first();
         $discussion = $this->factory->create(Discussion::class, ['updated_at' => Carbon::yesterday()]);
-        $discussion->participants()->save(
-            $this->factory->make(Participant::class, ['user_id' => $userId, 'last_read' => Carbon::now()])
+        $discussion->participations()->save(
+            $this->factory->make(Participation::class, ['last_read' => Carbon::now()])
         );
 
-        static::assertFalse($discussion->isUnread($userId));
+        static::assertFalse($discussion->isUnread($user));
 
         $discussion = $this->factory->create(Discussion::class, ['subject' => 'Second Thread', 'updated_at' => Carbon::now()]);
-        $discussion->participants()->save(
-            $this->factory->make(Participant::class, ['user_id' => $userId, 'last_read' => Carbon::yesterday()])
+        $discussion->participations()->save(
+            $this->factory->make(Participation::class, ['last_read' => Carbon::yesterday()])
         );
 
-        static::assertTrue($discussion->isUnread($userId));
+        static::assertTrue($discussion->isUnread($user));
     }
 
     /** @test */
     public function it_can_check_if_has_users_and_participants()
     {
-        $ids = [1, 2, 3];
         /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
-        $participants = array_map(function ($userId) {
-            return $this->factory->make(Participant::class, ['user_id' => $userId]);
-        }, $ids);
-        $discussion->participants()->saveMany($participants);
+        $participants = $this->users->map(function (User $user) {
+            return $this->factory->make(Participation::class, [
+                'participable_type' => $user->getMorphClass(),
+                'participable_id'   => $user->getKey(),
+            ]);
+        });
+        $discussion->participations()->saveMany($participants);
 
-        foreach ($ids as $id) {
-            static::assertTrue($discussion->hasParticipant($id));
-        }
+        $this->users->each(function(User $user) use ($discussion) {
+            static::assertTrue($discussion->hasParticipation($user));
+        });
 
-        static::assertFalse($discussion->hasParticipant(99));
+        static::assertFalse($discussion->hasParticipation(
+            $this->factory->create(User::class)
+        ));
     }
 
     /** @test */
     public function it_can_get_a_participant_by_user_id()
     {
-        /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $userId      = 1;
-        $discussion  = $this->factory->create(Discussion::class);
-        $discussion->participants()->save(
-            $this->factory->make(Participant::class, ['user_id' => $userId])
+        /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
+        $user       = $this->users->first();
+        $discussion = $this->factory->create(Discussion::class);
+        $discussion->participations()->save(
+            $this->factory->make(Participation::class)
         );
 
-        $participant = $discussion->getParticipantByUserId($userId);
+        /** @var  \Arcanedev\LaravelMessenger\Models\Participation  $participant */
+        $participant = $discussion->getParticipationByParticipable($user);
 
-        static::assertInstanceOf(Participant::class, $participant);
+        static::assertInstanceOf(Participation::class, $participant);
+        static::assertSame($user->getMorphClass(), $participant->participable_type);
+        static::assertSame($user->getKey(), $participant->participable_id);
     }
 
     /** @test */
     public function it_can_get_participants_string()
     {
-        /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $ids          = [1, 2, 3];
+        /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
-        $participants = $discussion->addParticipants($ids);
+        $participants = $discussion->addParticipants($this->users);
 
-        $rendered = $discussion->participantsString();
+        $rendered = $discussion->participationsString();
         static::assertContains(', ', $rendered);
         static::assertCount($participants->count(), explode(', ', $rendered));
-
-        $rendered = $discussion->participantsString(2);
-
-        static::assertContains(', ', $rendered);
-        static::assertCount($participants->count() - 1, explode(', ', $rendered));
     }
 
     /** @test */
     public function it_can_get_participants_custom_string()
     {
-        /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $ids          = [1, 2, 3];
-        $discussion   = $this->factory->create(Discussion::class);
-        $participants = $discussion->addParticipants($ids);
-        $callback     = function (Participant $participant) {
-            return '#' . $participant->user_id;
-        };
+        /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
+        $discussion = $this->factory->create(Discussion::class);
+        $discussion->addParticipants($this->users);
 
-        $rendered = $discussion->participantsString(null, $callback);
-
-        static::assertContains(', ', $rendered);
-        static::assertCount($participants->count(), explode(', ', $rendered));
-        foreach (explode(', ', $rendered) as $info) {
-            static::assertStringStartsWith('#', $info);
-        }
-
-        $rendered = $discussion->participantsString(2, $callback);
-
-        static::assertContains(', ', $rendered);
-        static::assertCount($participants->count() - 1, explode(', ', $rendered));
-        foreach (explode(', ', $rendered) as $info) {
-            static::assertStringStartsWith('#', $info);
-        }
+        static::assertSame(
+            '#1 from [Arcanedev\LaravelMessenger\Tests\Stubs\Models\User], #2 from [Arcanedev\LaravelMessenger\Tests\Stubs\Models\User], #3 from [Arcanedev\LaravelMessenger\Tests\Stubs\Models\User]',
+            $discussion->participationsString(function (Participation $participant) {
+                return '#'.$participant->participable_id.' from ['.$participant->participable_type.']';
+            })
+        );
     }
 
     /** @test */
     public function it_can_mark_last_read()
     {
-        /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
+        /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion  = $this->factory->create(Discussion::class);
-        $participant = $discussion->addParticipant(1);
+        $participant = $discussion->addParticipant(
+            $user = $this->users->first()
+        );
 
-        static::assertCount(1, $discussion->participants);
+        static::assertCount(1, $discussion->participations);
         static::assertEquals(
-            $discussion->participants->first()->id,
+            $discussion->participations->first()->id,
             $participant->id
         );
 
-        /** @var \Arcanedev\LaravelMessenger\Models\Participant  $participant */
-        foreach ($discussion->participants as $participant) {
+        /** @var  \Arcanedev\LaravelMessenger\Models\Participation  $participant */
+        foreach ($discussion->participations as $participant) {
             static::assertNull($participant->last_read);
-            $discussion->markAsRead($participant->user_id);
+            $discussion->markAsRead($participant->participable);
         }
 
-        $discussion->load(['participants']);
+        $discussion->load(['participations']);
 
-        /** @var \Arcanedev\LaravelMessenger\Models\Participant  $participant */
-        foreach ($discussion->participants as $participant) {
+        /** @var  \Arcanedev\LaravelMessenger\Models\Participation  $participant */
+        foreach ($discussion->participations as $participant) {
             static::assertNotNull($participant->last_read);
         }
     }
@@ -344,25 +337,31 @@ class DiscussionTest extends TestCase
     /** @test */
     public function it_can_skip_mark_last_read_if_participant_not_found()
     {
-        /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $discussion  = $this->factory->create(Discussion::class);
+        /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
+        $user       = $this->users->first();
+        $discussion = $this->factory->create(Discussion::class);
 
-        static::assertFalse($discussion->markAsRead(10));
+        static::assertFalse($discussion->markAsRead($user));
     }
 
     /** @test */
     public function it_can_check_participant_if_has_not_marked_as_read()
     {
-        /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
+        /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion  = $this->factory->create(Discussion::class);
-        $participant = $discussion->addParticipant(1);
+        $participant = $discussion->addParticipant(
+            $user = $this->users->first()
+        );
 
-        static::assertCount(1, $discussion->participants);
-        static::assertTrue($discussion->isUnread($participant->user_id));
+        static::assertCount(1, $discussion->participations);
 
-        $discussion->markAsRead($participant->user_id);
+        static::assertTrue($discussion->isUnread($participant->participable));
+        static::assertTrue($discussion->isUnread($user));
 
-        static::assertFalse($discussion->isUnread($participant->user_id));
+        $discussion->markAsRead($user);
+
+        static::assertFalse($discussion->isUnread($participant->participable));
+        static::assertFalse($discussion->isUnread($user));
     }
 
     /** @test */
@@ -448,54 +447,44 @@ class DiscussionTest extends TestCase
     /** @test */
     public function it_can_get_users_ids()
     {
-        /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
-        $ids          = [1, 2, 3];
-        $discussion   = $this->factory->create(Discussion::class);
-        $discussion->addParticipants($ids);
+        /**
+         * @var \Illuminate\Database\Eloquent\Collection       $users
+         * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion
+         */
+        $users      = $this->factory->of(Discussion::class)->times(3)->create();
+        $discussion = $this->factory->create(Discussion::class);
+        $discussion->addParticipants($users);
 
-        $usersIds = $discussion->participantsUserIds();
+        $participables = $discussion->getParticipables();
 
-        static::assertInstanceOf(Collection::class, $usersIds);
-        static::assertCount(count($ids), $usersIds);
-        static::assertEquals($ids, $usersIds->toArray());
-
-        // Ignore the user id if exists
-        $usersIds = $discussion->participantsUserIds(3);
-
-        static::assertInstanceOf(Collection::class, $usersIds);
-        static::assertCount(count($ids), $usersIds);
-        static::assertEquals($ids, $usersIds->toArray());
-
-        $ids[]    = 4;
-        $usersIds = $discussion->participantsUserIds(4);
-
-        static::assertInstanceOf(Collection::class, $usersIds);
-        static::assertCount(count($ids), $usersIds);
-        static::assertEquals($ids, $usersIds->toArray());
+        static::assertInstanceOf(Collection::class, $participables);
+        static::assertCount($users->count(), $participables);
     }
 
     /** @test */
     public function it_can_get_all_discussions_between_specific_users()
     {
         /**
-         * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussionOne
-         * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussionTwo
+         * @var \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $userOne
+         * @var \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $userTwo
+         * @var \Arcanedev\LaravelMessenger\Models\Discussion        $discussionOne
+         * @var \Arcanedev\LaravelMessenger\Models\Discussion        $discussionTwo
          */
-        $userIdOne     = 1;
-        $userIdTwo     = 2;
+        $userOne       = $this->users->get(0);
+        $userTwo       = $this->users->get(1);
         $discussionOne = $this->factory->create(Discussion::class);
 
-        $discussionOne->participants()->saveMany([
-            $this->factory->make(Participant::class, ['user_id' => $userIdOne]),
-            $this->factory->make(Participant::class, ['user_id' => $userIdTwo]),
+        $discussionOne->participations()->saveMany([
+            $this->factory->make(Participation::class),
+            $this->factory->make(Participation::class, ['participable_id' => $userTwo->getKey()]),
         ]);
 
         $discussionTwo = $this->factory->create(Discussion::class);
-        $discussionTwo->participants()->save(
-            $this->factory->make(Participant::class, ['user_id' => $userIdOne])
+        $discussionTwo->participations()->save(
+            $this->factory->make(Participation::class)
         );
 
-        $discussions = Discussion::between([$userIdOne, $userIdTwo])->get();
+        $discussions = Discussion::between([$userOne, $userTwo])->get();
 
         static::assertCount(1, $discussions);
     }
@@ -504,21 +493,22 @@ class DiscussionTest extends TestCase
     public function it_can_get_all_discussions_for_a_user()
     {
         /**
-         * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussionOne
-         * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussionTwo
+         * @var \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $user
+         * @var \Arcanedev\LaravelMessenger\Models\Discussion        $discussionOne
+         * @var \Arcanedev\LaravelMessenger\Models\Discussion        $discussionTwo
          */
-        $userId         = 1;
-        $discussionOne  = $this->factory->create(Discussion::class);
-        $discussionOne->participants()->save(
-            $this->factory->make(Participant::class, ['user_id' => $userId])
+        $user          = $this->users->first();
+        $discussionOne = $this->factory->create(Discussion::class);
+        $discussionOne->participations()->save(
+            $this->factory->make(Participation::class)
         );
 
         $discussionTwo  = $this->factory->create(Discussion::class, ['subject' => 'Second Thread']);
-        $discussionTwo->participants()->save(
-            $this->factory->make(Participant::class, ['user_id' => $userId])
+        $discussionTwo->participations()->save(
+            $this->factory->make(Participation::class)
         );
 
-        $discussions = Discussion::forUser($userId)->with(['participants'])->get();
+        $discussions = Discussion::forUser($user)->withParticipations()->get();
 
         static::assertCount(2, $discussions);
     }
@@ -526,35 +516,46 @@ class DiscussionTest extends TestCase
     /** @test */
     public function it_can_get_all_users_for_a_discussion()
     {
-        /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
+        /**
+         * @var  \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $userOne
+         * @var  \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $userTwo
+         * @var  \Arcanedev\LaravelMessenger\Models\Discussion        $discussion
+         */
+        $userOne    = $this->users->get(0);
+        $userTwo    = $this->users->get(1);
         $discussion = $this->factory->create(Discussion::class);
 
-        $discussion->participants()->saveMany([
-            $this->factory->make(Participant::class, ['user_id' => 1]),
-            $this->factory->make(Participant::class, ['user_id' => 2]),
+        $discussion->participations()->saveMany([
+            $this->factory->make(Participation::class),
+            $this->factory->make(Participation::class, ['participable_id' => $userTwo->getKey()]),
         ]);
 
-        $discussionUsers = $discussion->users()->get();
+        $discussionUsers = $discussion->getParticipables();
 
         static::assertCount(2, $discussionUsers);
-        static::assertSame([1, 2], $discussionUsers->pluck('id')->toArray());
+        static::assertSame([$userOne->id, $userTwo->id], $discussionUsers->pluck('id')->toArray());
     }
 
     /** @test */
     public function it_can_get_all_discussions_for_a_user_with_new_messages()
     {
-        $userId = 1;
+        /**
+         * @var  \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $user
+         * @var  \Arcanedev\LaravelMessenger\Models\Discussion        $discussionOne
+         * @var  \Arcanedev\LaravelMessenger\Models\Discussion        $discussionTwo
+         */
+        $user          = $this->users->first();
         $discussionOne = $this->factory->create(Discussion::class, ['updated_at' => Carbon::yesterday()]);
-        $discussionOne->participants()->save(
-            $this->factory->make(Participant::class, ['user_id' => $userId, 'last_read' => Carbon::now()])
+        $discussionOne->participations()->save(
+            $this->factory->make(Participation::class, ['last_read' => Carbon::now()])
         );
 
         $discussionTwo = $this->factory->create(Discussion::class, ['subject' => 'Second Thread', 'updated_at' => Carbon::now()]);
-        $discussionTwo->participants()->save(
-            $this->factory->make(Participant::class, ['user_id' => $userId, 'last_read' => Carbon::yesterday()])
+        $discussionTwo->participations()->save(
+            $this->factory->make(Participation::class, ['last_read' => Carbon::yesterday()])
         );
 
-        $discussions = Discussion::forUserWithNewMessages($userId)->get();
+        $discussions = Discussion::forUserWithNewMessages($user)->get();
 
         static::assertCount(1, $discussions);
     }
@@ -562,16 +563,28 @@ class DiscussionTest extends TestCase
     /** @test */
     public function it_should_get_all_unread_messages_for_user()
     {
-        /** @var \Arcanedev\LaravelMessenger\Models\Discussion $discussion */
+        /**
+         * @var  \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $userOne
+         * @var  \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $userTwo
+         * @var  \Arcanedev\LaravelMessenger\Models\Discussion        $discussion
+         */
+        $userOne    = $this->factory->create(User::class);
+        $userTwo    = $this->factory->create(User::class);
         $discussion = $this->factory->create(Discussion::class);
-        $discussion->participants()->saveMany([
-            $participantOne = $this->factory->make(Participant::class, ['user_id' => 1]),
-            $participantTwo = $this->factory->make(Participant::class, ['user_id' => 2]),
+        $discussion->participations()->saveMany([
+            $participantOne = $this->factory->make(Participation::class, [
+                'participable_type' => $userOne->getMorphClass(),
+                'participable_id'   => $userOne->getKey(),
+            ]),
+            $participantTwo = $this->factory->make(Participation::class, [
+                'participable_type' => $userTwo->getMorphClass(),
+                'participable_id'   => $userTwo->getKey(),
+            ]),
         ]);
         $discussion->messages()->save(
             $this->factory->make(Message::class, ['body' => 'Message 1', 'created_at' => Carbon::now()])
         );
-        $discussion->markAsRead($participantTwo->user_id);
+        $discussion->markAsRead($userTwo);
         // Simulate delay after last read
         sleep(1);
 
@@ -579,13 +592,13 @@ class DiscussionTest extends TestCase
             $this->factory->make(Message::class, ['body' => 'Message 2', 'created_at' => Carbon::now()])
         );
 
-        $messages = $discussion->userUnreadMessages(1);
+        $messages = $discussion->getUnreadMessages($userOne);
 
         static::assertInstanceOf(Collection::class, $messages);
         static::assertCount(2, $messages);
         static::assertEquals('Message 1', $messages->first()->body);
 
-        $messages = $discussion->userUnreadMessages(2);
+        $messages = $discussion->getUnreadMessages($userTwo);
 
         static::assertInstanceOf(Collection::class, $messages);
         static::assertCount(1, $messages);
@@ -597,18 +610,18 @@ class DiscussionTest extends TestCase
     {
         /**
          * @var \Arcanedev\LaravelMessenger\Models\Discussion   $discussion
-         * @var \Arcanedev\LaravelMessenger\Models\Participant  $participantOne
-         * @var \Arcanedev\LaravelMessenger\Models\Participant  $participantTwo
+         * @var \Arcanedev\LaravelMessenger\Models\Participation  $participantOne
+         * @var \Arcanedev\LaravelMessenger\Models\Participation  $participantTwo
          */
         $discussion = $this->factory->create(Discussion::class);
-        $discussion->participants()->saveMany([
-            $participantOne = $this->factory->make(Participant::class),
-            $participantTwo = $this->factory->make(Participant::class, ['user_id' => 2]),
+        $discussion->participations()->saveMany([
+            $participantOne = $this->factory->make(Participation::class),
+            $participantTwo = $this->factory->make(Participation::class, ['participable_id' => 2]),
         ]);
         $discussion->messages()->save(
             $this->factory->make(Message::class, ['body' => 'Message 1', 'created_at' => Carbon::now()])
         );
-        $discussion->markAsRead($participantTwo->user_id);
+        $discussion->markAsRead($participantTwo->participable);
         // Simulate delay after last read
         sleep(1);
 
@@ -616,11 +629,13 @@ class DiscussionTest extends TestCase
             $this->factory->make(Message::class, ['body' => 'Message 2', 'created_at' => Carbon::now()])
         );
 
-        static::assertCount(2, $discussion->userUnreadMessages($participantOne->user_id));
-        static::assertCount(1, $discussion->userUnreadMessages($participantTwo->user_id));
+        static::assertCount(2, $discussion->getUnreadMessages($participantOne->participable));
+        static::assertCount(1, $discussion->getUnreadMessages($participantTwo->participable));
 
         // it must return empty unread messages collection with invalid participant id
-        $messages = $discussion->userUnreadMessages(0);
+        $messages = $discussion->getUnreadMessages(
+            $this->factory->create(User::class)
+        );
 
         static::assertInstanceOf(Collection::class, $messages);
         static::assertCount(0, $messages);

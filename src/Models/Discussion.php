@@ -2,9 +2,10 @@
 
 use Arcanedev\LaravelMessenger\Contracts\Discussion as DiscussionContract;
 use Arcanedev\LaravelMessenger\Contracts\Message as MessageContract;
-use Arcanedev\LaravelMessenger\Contracts\Participant as ParticipantContract;
+use Arcanedev\LaravelMessenger\Contracts\Participation as ParticipationContract;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
@@ -23,13 +24,14 @@ use Illuminate\Support\Collection;
  *
  * @property  \Illuminate\Database\Eloquent\Model         creator
  * @property  \Illuminate\Database\Eloquent\Collection    messages
- * @property  \Illuminate\Database\Eloquent\Collection    participants
+ * @property  \Illuminate\Database\Eloquent\Collection    participations
  * @property  \Arcanedev\LaravelMessenger\Models\Message  latest_message
  *
- * @method static \Illuminate\Database\Eloquent\Builder  subject(string $subject, bool $strict)
- * @method static \Illuminate\Database\Eloquent\Builder  between(array $usersIds)
- * @method static \Illuminate\Database\Eloquent\Builder  forUser(int $userId)
- * @method static \Illuminate\Database\Eloquent\Builder  forUserWithNewMessages(int $userId)
+ * @method static \Illuminate\Database\Eloquent\Builder|static  subject(string $subject, bool $strict)
+ * @method static \Illuminate\Database\Eloquent\Builder|static  between(\Illuminate\Support\Collection|array $participables)
+ * @method static \Illuminate\Database\Eloquent\Builder|static  forUser(\Illuminate\Database\Eloquent\Model $participable)
+ * @method static \Illuminate\Database\Eloquent\Builder|static  withParticipations()
+ * @method static \Illuminate\Database\Eloquent\Builder|static  forUserWithNewMessages(\Illuminate\Database\Eloquent\Model $participable)
  */
 class Discussion extends Model implements DiscussionContract
 {
@@ -97,10 +99,10 @@ class Discussion extends Model implements DiscussionContract
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function participants()
+    public function participations()
     {
         return $this->hasMany(
-            $this->getModelFromConfig('participants', Participant::class)
+            $this->getModelFromConfig('participations', Participation::class)
         );
     }
 
@@ -112,33 +114,18 @@ class Discussion extends Model implements DiscussionContract
     public function messages()
     {
         return $this->hasMany(
-            $this->getModelFromConfig('messages', Participant::class)
+            $this->getModelFromConfig('messages', Participation::class)
         );
     }
 
     /**
-     * User's relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function users()
-    {
-        return $this->belongsToMany(
-            $this->getModelFromConfig('users'),
-            $this->getTableFromConfig('participants', 'participants'),
-            'discussion_id',
-            'user_id'
-        );
-    }
-
-    /**
-     * Get the user that created the first message.
+     * Get the participable that created the first message.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function creator()
     {
-        return $this->messages()->oldest()->first()->user();
+        return $this->messages()->oldest()->first()->author();
     }
 
     /* -----------------------------------------------------------------
@@ -147,76 +134,87 @@ class Discussion extends Model implements DiscussionContract
      */
 
     /**
-     * Scope discussions that the user is associated with.
+     * Scope discussions that the participable is associated with.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  int                                    $userId
+     * @param  \Illuminate\Database\Eloquent\Model    $participable
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeForUser(Builder $query, $userId)
+    public function scopeForUser(Builder $query, EloquentModel $participable)
     {
-        return $query->join(
-            $participants = $this->getParticipantsTable(),
+        $table = $this->getParticipationsTable();
 
-            function (JoinClause $join) use ($participants, $userId) {
-                $join->on($this->getQualifiedKeyName(), '=', "{$participants}.discussion_id")
-                     ->where("{$participants}.user_id", '=', $userId)
-                     ->whereNull("{$participants}.deleted_at");
-            }
-        );
-    }
-
-    /**
-     * Scope discussions with new messages that the user is associated with.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  int                                    $userId
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeForUserWithNewMessages(Builder $query, $userId)
-    {
-        $participants = $this->getParticipantsTable();
-        $discussions  = $this->getTable();
-        $prefix       = $this->getConnection()->getTablePrefix();
-
-        return $this->scopeForUser($query, $userId)
-            ->where(function (Builder $query) use ($participants, $discussions, $prefix) {
-                $expression = $this->getConnection()->raw("{$prefix}{$participants}.last_read");
-
-                $query->where("{$discussions}.updated_at", '>', $expression)
-                      ->orWhereNull("{$participants}.last_read");
-            });
-    }
-
-    /**
-     * Scope discussions between given user ids.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  array                                  $userIds
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeBetween(Builder $query, array $userIds)
-    {
-        $participants = $this->getParticipantsTable();
-
-        return $query->whereHas($participants, function (Builder $query) use ($userIds) {
-            $query->whereIn('user_id', $userIds)
-                  ->groupBy('discussion_id')
-                  ->havingRaw('COUNT(discussion_id)=' . count($userIds));
+        return $query->join($table, function (JoinClause $join) use ($table, $participable) {
+            $join->on($this->getQualifiedKeyName(), '=', "{$table}.discussion_id")
+                 ->where("{$table}.participable_type", '=', $participable->getMorphClass())
+                 ->where("{$table}.participable_id", '=', $participable->getKey())
+                 ->whereNull("{$table}.deleted_at");
         });
     }
 
     /**
-     * Get the participants table name.
+     * Scope discussions to load participations relationship.
      *
-     * @return string
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    protected function getParticipantsTable()
+    public function scopeWithParticipations(Builder $query)
     {
-        return $this->getTableFromConfig('participants', 'participants');
+        return $query->with(['participations']);
+    }
+
+    /**
+     * Scope discussions with new messages that the participable is associated with.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Model    $participable
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeForUserWithNewMessages(Builder $query, EloquentModel $participable)
+    {
+        $prefix       = $this->getConnection()->getTablePrefix();
+        $participations = $this->getParticipationsTable();
+        $discussions  = $this->getTable();
+
+        return $this->scopeForUser($query, $participable)
+                    ->where(function (Builder $query) use ($participations, $discussions, $prefix) {
+                        $expression = $this->getConnection()->raw("{$prefix}{$participations}.last_read");
+                        $query->where("{$discussions}.updated_at", '>', $expression)
+                              ->orWhereNull("{$participations}.last_read");
+                    });
+    }
+
+    /**
+     * Scope discussions between given participables.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Support\Collection|array   $participables
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeBetween(Builder $query, $participables)
+    {
+        return $query->whereHas($this->getParticipationsTable(), function (Builder $query) use ($participables) {
+            $index = 0;
+
+            foreach ($participables as $participable) {
+                /** @var  \Illuminate\Database\Eloquent\Model  $participable */
+                $clause = [
+                    ['participable_type', '=', $participable->getMorphClass()],
+                    ['participable_id', '=', $participable->getKey()],
+                ];
+
+                $query->where($clause, null, null, $index === 0 ? 'and' : 'or');
+
+                $index++;
+            }
+
+            $query->groupBy('discussion_id')
+                  ->havingRaw('COUNT(discussion_id)='.count($participables));
+        });
     }
 
     /**
@@ -248,6 +246,16 @@ class Discussion extends Model implements DiscussionContract
         return $this->messages->sortByDesc('created_at')->first();
     }
 
+    /**
+     * Get the participations table name.
+     *
+     * @return string
+     */
+    protected function getParticipationsTable()
+    {
+        return $this->getTableFromConfig('participations', 'participations');
+    }
+
     /* -----------------------------------------------------------------
      |  Main Methods
      | -----------------------------------------------------------------
@@ -277,104 +285,105 @@ class Discussion extends Model implements DiscussionContract
     }
 
     /**
-     * Returns an array of user ids that are associated with the discussion.
-     *
-     * @param  int|null  $userId
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function participantsUserIds($userId = null)
-    {
-        /** @var \Illuminate\Support\Collection $usersIds */
-        $usersIds = $this->participants()->withTrashed()->get()
-            ->map(function (ParticipantContract $participant) {
-                return $participant->user_id;
-            });
-
-        if ($userId !== null)
-            $usersIds->push($userId);
-
-        return $usersIds->unique();
-    }
-
-    /**
-     * Add a user to discussion as a participant.
-     *
-     * @param  int  $userId
-     *
-     * @return \Arcanedev\LaravelMessenger\Models\Participant
-     */
-    public function addParticipant($userId)
-    {
-        /** @var \Arcanedev\LaravelMessenger\Models\Participant $participant */
-        $participant = $this->participants()->firstOrCreate([
-            'user_id'       => $userId,
-            'discussion_id' => $this->id,
-        ]);
-
-        return $participant;
-    }
-
-    /**
-     * Add users to discussion as participants.
-     *
-     * @param  array  $userIds
+     * Returns an array of participables that are associated with the discussion.
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function addParticipants(array $userIds)
+    public function getParticipables()
     {
-        foreach ($userIds as $userId) {
-            $this->addParticipant($userId);
-        }
-
-        return $this->participants;
+        return $this->participations()
+            ->withTrashed()
+            ->get()
+            ->transform(function (ParticipationContract $participant) {
+                return $participant->participable;
+            })
+            ->unique(function (EloquentModel $participable) {
+                return $participable->getMorphClass().'-'.$participable->getKey();
+            });
     }
 
     /**
-     * Remove a participant from discussion.
+     * Add a participable to discussion.
      *
-     * @param  int   $userId
-     * @param  bool  $reload
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
+     *
+     * @return \Arcanedev\LaravelMessenger\Models\Participation|mixed
+     */
+    public function addParticipant(EloquentModel $participable)
+    {
+        return $this->participations()->firstOrCreate([
+            'participable_id'   => $participable->getKey(),
+            'participable_type' => $participable->getMorphClass(),
+            'discussion_id'     => $this->id,
+        ]);
+    }
+
+    /**
+     * Add many participables to discussion.
+     *
+     * @param  \Illuminate\Support\Collection|array  $participables
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function addParticipants($participables)
+    {
+        foreach ($participables as $participable) {
+            $this->addParticipant($participable);
+        }
+
+        return $this->participations;
+    }
+
+    /**
+     * Remove a participable from discussion.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
+     * @param  bool                                 $reload
      *
      * @return int
      */
-    public function removeParticipant($userId, $reload = true)
+    public function removeParticipant(EloquentModel $participable, $reload = true)
     {
-        return $this->removeParticipants([$userId], $reload);
+        return $this->removeParticipants([$participable], $reload);
     }
 
     /**
-     * Remove participants from discussion.
+     * Remove many participables from discussion.
      *
-     * @param  array  $userIds
+     * @param  \Illuminate\Support\Collection|array  $participables
      * @param  bool   $reload
      *
      * @return int
      */
-    public function removeParticipants(array $userIds, $reload = true)
+    public function removeParticipants($participables, $reload = true)
     {
-        $deleted = $this->participants()
-            ->whereIn('user_id', $userIds)
-            ->where('discussion_id', $this->id)
-            ->delete();
+        $deleted = 0;
+
+        foreach ($participables as $participable) {
+            /** @var  \Illuminate\Database\Eloquent\Model  $participable */
+            $deleted += $this->participations()
+                ->where('participable_type', $participable->getMorphClass())
+                ->where('participable_id', $participable->getKey())
+                ->where('discussion_id', $this->id)
+                ->delete();
+        }
 
         if ($reload)
-            $this->load(['participants']);
+            $this->load(['participations']);
 
         return $deleted;
     }
 
     /**
-     * Mark a discussion as read for a user.
+     * Mark a discussion as read for a participable.
      *
-     * @param  int  $userId
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
      *
      * @return bool|int
      */
-    public function markAsRead($userId)
+    public function markAsRead(EloquentModel $participable)
     {
-        if ($participant = $this->getParticipantByUserId($userId)) {
+        if ($participant = $this->getParticipationByParticipable($participable)) {
             return $participant->update([
                 'last_read' => Carbon::now()
             ]);
@@ -384,63 +393,61 @@ class Discussion extends Model implements DiscussionContract
     }
 
     /**
-     * See if the current thread is unread by the user.
+     * See if the current thread is unread by the participable.
      *
-     * @param  int  $userId
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
      *
      * @return bool
      */
-    public function isUnread($userId)
+    public function isUnread(EloquentModel $participable)
     {
-        return ($participant = $this->getParticipantByUserId($userId))
+        return ($participant = $this->getParticipationByParticipable($participable))
             ? $participant->last_read < $this->updated_at
             : false;
     }
 
     /**
-     * Finds the participant record from a user id.
+     * Finds the participant record from a participable model.
      *
-     * @param  int  $userId
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
      *
-     * @return \Arcanedev\LaravelMessenger\Models\Participant
+     * @return \Arcanedev\LaravelMessenger\Models\Participation|mixed
      */
-    public function getParticipantByUserId($userId)
+    public function getParticipationByParticipable(EloquentModel $participable)
     {
-        /** @var  \Arcanedev\LaravelMessenger\Models\Participant  $participant */
-        $participant = $this->participants()
-            ->where('user_id', $userId)
+        return $this->participations()
+            ->where('participable_type', $participable->getMorphClass())
+            ->where('participable_id', $participable->getKey())
             ->first();
-
-        return $participant;
     }
 
     /**
-     * Get the trashed participants.
+     * Get the trashed participations.
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getTrashedParticipants()
+    public function getTrashedParticipations()
     {
-        return $this->participants()->onlyTrashed()->get();
+        return $this->participations()->onlyTrashed()->get();
     }
 
     /**
-     * Restores all participants within a discussion.
+     * Restores all participations within a discussion.
      *
      * @param  bool  $reload
      *
      * @return int
      */
-    public function restoreAllParticipants($reload = true)
+    public function restoreAllParticipations($reload = true)
     {
-        $restored = $this->getTrashedParticipants()
-            ->filter(function (ParticipantContract $participant) {
+        $restored = $this->getTrashedParticipations()
+            ->filter(function (ParticipationContract $participant) {
                 return $participant->restore();
             })
             ->count();
 
         if ($reload)
-            $this->load(['participants']);
+            $this->load(['participations']);
 
         return $restored;
     }
@@ -448,61 +455,59 @@ class Discussion extends Model implements DiscussionContract
     /**
      * Generates a participant information as a string.
      *
-     * @param  int|null       $ignoredUserId
      * @param  \Closure|null  $callback
      * @param  string         $glue
      *
      * @return string
      */
-    public function participantsString($ignoredUserId = null, $callback = null, $glue = ', ')
+    public function participationsString($callback = null, $glue = ', ')
     {
-        /** @var \Illuminate\Database\Eloquent\Collection $participants */
-        $participants = $this->participants->load(['user']);
+        /** @var \Illuminate\Database\Eloquent\Collection $participations */
+        $participations = $this->participations->load(['participable']);
 
         if (is_null($callback)) {
             // By default: the participant name
-            $callback = function (ParticipantContract $participant) {
+            $callback = function (ParticipationContract $participant) {
                 return $participant->stringInfo();
             };
         }
 
-        return $participants->reject(function (ParticipantContract $participant) use ($ignoredUserId) {
-            return $participant->user_id === $ignoredUserId;
-        })->map($callback)->implode($glue);
+        return $participations->map($callback)->implode($glue);
     }
 
     /**
-     * Checks to see if a user is a current participant of the discussion.
+     * Checks to see if a participable is a current participant of the discussion.
      *
-     * @param  int  $userId
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
      *
      * @return bool
      */
-    public function hasParticipant($userId)
+    public function hasParticipation(EloquentModel $participable)
     {
-        return $this->participants()
-            ->where('user_id', '=', $userId)
+        return $this->participations()
+            ->where('participable_id', '=', $participable->getKey())
+            ->where('participable_type', '=', $participable->getMorphClass())
             ->count() > 0;
     }
 
     /**
-     * Returns array of unread messages in discussion for given user.
+     * Get the unread messages in discussion for a specific participable.
      *
-     * @param  int  $userId
+     * @param  \Illuminate\Database\Eloquent\Model  $participable
      *
      * @return \Illuminate\Support\Collection
      */
-    public function userUnreadMessages($userId)
+    public function getUnreadMessages(EloquentModel $participable)
     {
-        $participant = $this->getParticipantByUserId($userId);
+        $participation = $this->getParticipationByParticipable($participable);
 
-        if (is_null($participant))
+        if (is_null($participation))
             return new Collection;
 
-        return is_null($participant->last_read)
+        return is_null($participation->last_read)
             ? $this->messages->toBase()
-            : $this->messages->filter(function (MessageContract $message) use ($participant) {
-                return $message->updated_at->gt($participant->last_read);
+            : $this->messages->filter(function (MessageContract $message) use ($participation) {
+                return $message->updated_at->gt($participation->last_read);
             })->toBase();
     }
 }

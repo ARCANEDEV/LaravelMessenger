@@ -63,7 +63,7 @@ class LaravelMessengerServiceProviderTest extends TestCase
         $expected = [
             \Arcanedev\LaravelMessenger\Contracts\Discussion::class,
             \Arcanedev\LaravelMessenger\Contracts\Message::class,
-            \Arcanedev\LaravelMessenger\Contracts\Participant::class,
+            \Arcanedev\LaravelMessenger\Contracts\Participation::class,
         ];
 
         static::assertSame($expected, $this->provider->provides());

@@ -10,15 +10,16 @@ use Arcanedev\LaravelMessenger\Contracts\Message as MessageContract;
  *
  * @property  int                                            id
  * @property  int                                            discussion_id
- * @property  int                                            user_id
+ * @property  string                                         participable_type
+ * @property  int                                            participable_id
  * @property  int                                            body
  * @property  \Carbon\Carbon                                 created_at
  * @property  \Carbon\Carbon                                 updated_at
  *
  * @property  \Arcanedev\LaravelMessenger\Models\Discussion  discussion
- * @property  \Illuminate\Database\Eloquent\Model            user
+ * @property  \Illuminate\Database\Eloquent\Model            participable
  * @property  \Illuminate\Database\Eloquent\Model            author
- * @property  \Illuminate\Database\Eloquent\Collection       participants
+ * @property  \Illuminate\Database\Eloquent\Collection       participations
  * @property  \Illuminate\Database\Eloquent\Collection       recipients
  */
 class Message extends Model implements MessageContract
@@ -40,7 +41,7 @@ class Message extends Model implements MessageContract
      *
      * @var array
      */
-    protected $fillable = ['discussion_id', 'user_id', 'body'];
+    protected $fillable = ['discussion_id', 'body'];
 
     /**
      * The attributes that should be cast to native types.
@@ -48,9 +49,9 @@ class Message extends Model implements MessageContract
      * @var array
      */
     protected $casts = [
-        'id'            => 'integer',
-        'discussion_id' => 'integer',
-        'user_id'       => 'integer',
+        'id'              => 'integer',
+        'discussion_id'   => 'integer',
+        'participable_id' => 'integer',
     ];
 
     /* -----------------------------------------------------------------
@@ -92,34 +93,32 @@ class Message extends Model implements MessageContract
     /**
      * User/Author relationship (alias).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
     public function author()
     {
-        return $this->user();
+        return $this->participable();
     }
 
     /**
-     * User/Author relationship.
+     * Participable relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function user()
+    public function participable()
     {
-        return $this->belongsTo(
-            $this->getModelFromConfig('users')
-        );
+        return $this->morphTo();
     }
 
     /**
-     * Participants relationship.
+     * Participations relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function participants()
+    public function participations()
     {
         return $this->hasMany(
-            $this->getModelFromConfig('participants', Participant::class),
+            $this->getModelFromConfig('participations', Participation::class),
             'discussion_id',
             'discussion_id'
         );
@@ -137,8 +136,9 @@ class Message extends Model implements MessageContract
      */
     public function getRecipientsAttribute()
     {
-        return $this->participants->reject(function (Participant $participant) {
-            return $participant->user_id === $this->user_id;
+        return $this->participations->reject(function (Participation $participant) {
+            return $participant->participable_id === $this->participable_id
+                && $participant->participable_type === $this->participable_type;
         });
     }
 }

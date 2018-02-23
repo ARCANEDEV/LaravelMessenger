@@ -60,7 +60,7 @@ class LaravelMessengerServiceProvider extends PackageServiceProvider
         return [
             Contracts\Discussion::class,
             Contracts\Message::class,
-            Contracts\Participant::class,
+            Contracts\Participation::class,
         ];
     }
 
@@ -76,9 +76,9 @@ class LaravelMessengerServiceProvider extends PackageServiceProvider
     {
         $config   = $this->config();
         $bindings = [
-            'discussions'  => Contracts\Discussion::class,
-            'messages'     => Contracts\Message::class,
-            'participants' => Contracts\Participant::class,
+            'discussions'    => Contracts\Discussion::class,
+            'messages'       => Contracts\Message::class,
+            'participations' => Contracts\Participation::class,
         ];
 
         foreach ($bindings as $key => $contract) {
