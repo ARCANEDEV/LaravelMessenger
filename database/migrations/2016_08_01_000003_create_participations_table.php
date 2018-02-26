@@ -25,7 +25,7 @@ class CreateParticipationsTable extends Migration
         parent::__construct();
 
         $this->setTable(
-            $this->getTableFromConfig('participations', 'participations')
+            config('laravel-messenger.participations.table', 'participations')
         );
     }
 
@@ -42,7 +42,7 @@ class CreateParticipationsTable extends Migration
         $this->createSchema(function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('discussion_id');
-            $table->morphs('participable');
+            $table->morphs(config("laravel-messenger.users.morph", 'participable'));
             $table->timestamp('last_read')->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -72,7 +72,7 @@ class Participation extends Model implements ParticipantContract
     public function __construct(array $attributes = [])
     {
         $this->setTable(
-            $this->getTableFromConfig('participations', 'participations')
+            config('laravel-messenger.participations.table', 'participations')
         );
 
         parent::__construct($attributes);
@@ -91,7 +91,7 @@ class Participation extends Model implements ParticipantContract
     public function discussion()
     {
         return $this->belongsTo(
-            $this->getModelFromConfig('discussions', Discussion::class)
+            config('laravel-messenger.discussions.model', Discussion::class)
         );
     }
 
@@ -117,6 +117,6 @@ class Participation extends Model implements ParticipantContract
      */
     public function stringInfo()
     {
-        return $this->participable->name;
+        return $this->participable->getAttribute('name');
     }
 }

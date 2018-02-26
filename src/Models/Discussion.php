@@ -27,11 +27,11 @@ use Illuminate\Support\Collection;
  * @property  \Illuminate\Database\Eloquent\Collection    participations
  * @property  \Arcanedev\LaravelMessenger\Models\Message  latest_message
  *
- * @method static \Illuminate\Database\Eloquent\Builder|static  subject(string $subject, bool $strict)
- * @method static \Illuminate\Database\Eloquent\Builder|static  between(\Illuminate\Support\Collection|array $participables)
- * @method static \Illuminate\Database\Eloquent\Builder|static  forUser(\Illuminate\Database\Eloquent\Model $participable)
- * @method static \Illuminate\Database\Eloquent\Builder|static  withParticipations()
- * @method static \Illuminate\Database\Eloquent\Builder|static  forUserWithNewMessages(\Illuminate\Database\Eloquent\Model $participable)
+ * @method static  \Illuminate\Database\Eloquent\Builder|static  subject(string $subject, bool $strict)
+ * @method static  \Illuminate\Database\Eloquent\Builder|static  between(\Illuminate\Support\Collection|array $participables)
+ * @method static  \Illuminate\Database\Eloquent\Builder|static  forUser(\Illuminate\Database\Eloquent\Model $participable)
+ * @method static  \Illuminate\Database\Eloquent\Builder|static  withParticipations()
+ * @method static  \Illuminate\Database\Eloquent\Builder|static  forUserWithNewMessages(\Illuminate\Database\Eloquent\Model $participable)
  */
 class Discussion extends Model implements DiscussionContract
 {
@@ -83,7 +83,7 @@ class Discussion extends Model implements DiscussionContract
     public function __construct(array $attributes = [])
     {
         $this->setTable(
-            $this->getTableFromConfig('discussions', 'discussions')
+            config('laravel-messenger.discussions.table', 'discussions')
         );
 
         parent::__construct($attributes);
@@ -102,7 +102,7 @@ class Discussion extends Model implements DiscussionContract
     public function participations()
     {
         return $this->hasMany(
-            $this->getModelFromConfig('participations', Participation::class)
+            config('laravel-messenger.participations.model', Participation::class)
         );
     }
 
@@ -114,7 +114,7 @@ class Discussion extends Model implements DiscussionContract
     public function messages()
     {
         return $this->hasMany(
-            $this->getModelFromConfig('messages', Participation::class)
+            config('laravel-messenger.messages.model', Message::class)
         );
     }
 
@@ -139,16 +139,18 @@ class Discussion extends Model implements DiscussionContract
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @param  \Illuminate\Database\Eloquent\Model    $participable
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder|static
      */
     public function scopeForUser(Builder $query, EloquentModel $participable)
     {
         $table = $this->getParticipationsTable();
 
         return $query->join($table, function (JoinClause $join) use ($table, $participable) {
+            $morph = config('laravel-messenger.users.morph', 'participable');
+
             $join->on($this->getQualifiedKeyName(), '=', "{$table}.discussion_id")
-                 ->where("{$table}.participable_type", '=', $participable->getMorphClass())
-                 ->where("{$table}.participable_id", '=', $participable->getKey())
+                 ->where("{$table}.{$morph}_type", '=', $participable->getMorphClass())
+                 ->where("{$table}.{$morph}_id", '=', $participable->getKey())
                  ->whereNull("{$table}.deleted_at");
         });
     }
@@ -158,7 +160,7 @@ class Discussion extends Model implements DiscussionContract
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder|static
      */
     public function scopeWithParticipations(Builder $query)
     {
@@ -171,17 +173,18 @@ class Discussion extends Model implements DiscussionContract
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @param  \Illuminate\Database\Eloquent\Model    $participable
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder|static
      */
     public function scopeForUserWithNewMessages(Builder $query, EloquentModel $participable)
     {
-        $prefix       = $this->getConnection()->getTablePrefix();
+        $prefix         = $this->getConnection()->getTablePrefix();
         $participations = $this->getParticipationsTable();
-        $discussions  = $this->getTable();
+        $discussions    = $this->getTable();
 
         return $this->scopeForUser($query, $participable)
                     ->where(function (Builder $query) use ($participations, $discussions, $prefix) {
                         $expression = $this->getConnection()->raw("{$prefix}{$participations}.last_read");
+
                         $query->where("{$discussions}.updated_at", '>', $expression)
                               ->orWhereNull("{$participations}.last_read");
                     });
@@ -193,18 +196,19 @@ class Discussion extends Model implements DiscussionContract
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @param  \Illuminate\Support\Collection|array   $participables
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder|static
      */
     public function scopeBetween(Builder $query, $participables)
     {
         return $query->whereHas($this->getParticipationsTable(), function (Builder $query) use ($participables) {
+            $morph = config('laravel-messenger.users.morph', 'participable');
             $index = 0;
 
             foreach ($participables as $participable) {
                 /** @var  \Illuminate\Database\Eloquent\Model  $participable */
                 $clause = [
-                    ['participable_type', '=', $participable->getMorphClass()],
-                    ['participable_id', '=', $participable->getKey()],
+                    ["{$morph}_type", '=', $participable->getMorphClass()],
+                    ["{$morph}_id", '=', $participable->getKey()],
                 ];
 
                 $query->where($clause, null, null, $index === 0 ? 'and' : 'or');
@@ -224,7 +228,7 @@ class Discussion extends Model implements DiscussionContract
      * @param  string                                 $subject
      * @param  bool                                   $strict
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder|static
      */
     public function scopeSubject(Builder $query, $subject, $strict = false)
     {
@@ -253,7 +257,7 @@ class Discussion extends Model implements DiscussionContract
      */
     protected function getParticipationsTable()
     {
-        return $this->getTableFromConfig('participations', 'participations');
+        return config('laravel-messenger.participations.table', 'participations');
     }
 
     /* -----------------------------------------------------------------
@@ -311,10 +315,12 @@ class Discussion extends Model implements DiscussionContract
      */
     public function addParticipant(EloquentModel $participable)
     {
+        $morph = config('laravel-messenger.users.morph', 'participable');
+
         return $this->participations()->firstOrCreate([
-            'participable_id'   => $participable->getKey(),
-            'participable_type' => $participable->getMorphClass(),
-            'discussion_id'     => $this->id,
+            "{$morph}_id"   => $participable->getKey(),
+            "{$morph}_type" => $participable->getMorphClass(),
+            'discussion_id' => $this->id,
         ]);
     }
 
@@ -357,14 +363,15 @@ class Discussion extends Model implements DiscussionContract
      */
     public function removeParticipants($participables, $reload = true)
     {
+        $morph   = config('laravel-messenger.users.morph', 'participable');
         $deleted = 0;
 
         foreach ($participables as $participable) {
             /** @var  \Illuminate\Database\Eloquent\Model  $participable */
             $deleted += $this->participations()
-                ->where('participable_type', $participable->getMorphClass())
-                ->where('participable_id', $participable->getKey())
-                ->where('discussion_id', $this->id)
+                ->where("{$morph}_type", '=', $participable->getMorphClass())
+                ->where("{$morph}_id", '=', $participable->getKey())
+                ->where('discussion_id', '=', $this->id)
                 ->delete();
         }
 
@@ -384,9 +391,7 @@ class Discussion extends Model implements DiscussionContract
     public function markAsRead(EloquentModel $participable)
     {
         if ($participant = $this->getParticipationByParticipable($participable)) {
-            return $participant->update([
-                'last_read' => Carbon::now()
-            ]);
+            return $participant->update(['last_read' => Carbon::now()]);
         }
 
         return false;
@@ -415,9 +420,11 @@ class Discussion extends Model implements DiscussionContract
      */
     public function getParticipationByParticipable(EloquentModel $participable)
     {
+        $morph = config('laravel-messenger.users.morph', 'participable');
+
         return $this->participations()
-            ->where('participable_type', $participable->getMorphClass())
-            ->where('participable_id', $participable->getKey())
+            ->where("{$morph}_type", '=', $participable->getMorphClass())
+            ->where("{$morph}_id", '=', $participable->getKey())
             ->first();
     }
 
@@ -484,9 +491,11 @@ class Discussion extends Model implements DiscussionContract
      */
     public function hasParticipation(EloquentModel $participable)
     {
+        $morph = config('laravel-messenger.users.morph', 'participable');
+
         return $this->participations()
-            ->where('participable_id', '=', $participable->getKey())
-            ->where('participable_type', '=', $participable->getMorphClass())
+            ->where("{$morph}_id", '=', $participable->getKey())
+            ->where("{$morph}_type", '=', $participable->getMorphClass())
             ->count() > 0;
     }
 

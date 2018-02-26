@@ -67,7 +67,7 @@ class Message extends Model implements MessageContract
     public function __construct(array $attributes = [])
     {
         $this->setTable(
-            $this->getTableFromConfig('messages', 'messages')
+            config('laravel-messenger.messeges.table', 'messages')
         );
 
         parent::__construct($attributes);
@@ -86,7 +86,7 @@ class Message extends Model implements MessageContract
     public function discussion()
     {
         return $this->belongsTo(
-            $this->getModelFromConfig('discussions', Discussion::class)
+            config('laravel-messenger.discussions.model', Discussion::class)
         );
     }
 
@@ -118,7 +118,7 @@ class Message extends Model implements MessageContract
     public function participations()
     {
         return $this->hasMany(
-            $this->getModelFromConfig('participations', Participation::class),
+            config('laravel-messenger.participations.model', Participation::class),
             'discussion_id',
             'discussion_id'
         );
@@ -136,9 +136,11 @@ class Message extends Model implements MessageContract
      */
     public function getRecipientsAttribute()
     {
-        return $this->participations->reject(function (Participation $participant) {
-            return $participant->participable_id === $this->participable_id
-                && $participant->participable_type === $this->participable_type;
+        $morph = config('laravel-messenger.users.morph', 'participable');
+
+        return $this->participations->reject(function (Participation $participant) use ($morph) {
+            return $participant->getAttribute("{$morph}_id") === $this->getAttribute("{$morph}_id")
+                && $participant->getAttribute("{$morph}_type") === $this->getAttribute("{$morph}_type");
         });
     }
 }

@@ -25,7 +25,7 @@ class CreateMessagesTable extends Migration
         parent::__construct();
 
         $this->setTable(
-            $this->getTableFromConfig('messages', 'messages')
+            config('laravel-messenger.messages.table', 'messages')
         );
     }
 
@@ -42,7 +42,7 @@ class CreateMessagesTable extends Migration
         $this->createSchema(function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('discussion_id');
-            $table->morphs('participable');
+            $table->morphs(config("laravel-messenger.users.morph", 'participable'));
             $table->text('body');
             $table->timestamps();
         });

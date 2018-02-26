@@ -9,6 +9,8 @@ return [
 
     'database' => [
         'connection' => env('DB_CONNECTION', 'mysql'),
+
+        'prefix'     => null,
     ],
 
     /* -----------------------------------------------------------------
@@ -19,6 +21,7 @@ return [
     'users' => [
         'table' => 'users',
         'model' => App\User::class,
+        'morph' => 'participable',
     ],
 
     'discussions' => [

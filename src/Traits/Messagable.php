@@ -17,13 +17,6 @@ use Illuminate\Database\Eloquent\Builder;
 trait Messagable
 {
     /* -----------------------------------------------------------------
-     |  Traits
-     | -----------------------------------------------------------------
-     */
-
-    use ConfigHelper;
-
-    /* -----------------------------------------------------------------
      |  Relationships
      | -----------------------------------------------------------------
      */
@@ -31,40 +24,40 @@ trait Messagable
     /**
      * Thread relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\belongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
      */
     public function discussions()
     {
         return $this->morphToMany(
-            $this->getModelFromConfig('discussions', Models\Discussion::class),
-            'participable',
-            $this->getTableFromConfig('participations', 'participations')
+            config("laravel-messenger.discussions.model", Models\Discussion::class),
+            config("laravel-messenger.users.morph", 'participable'),
+            config("laravel-messenger.participations.table", 'participations')
         );
     }
 
     /**
      * Participations relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
     public function participations()
     {
         return $this->morphMany(
-            $this->getModelFromConfig('participations', Models\Participation::class),
-            'participable'
+            config("laravel-messenger.participations.model", Models\Participation::class),
+            config("laravel-messenger.users.morph", 'participable')
         );
     }
 
     /**
      * Message relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
     public function messages()
     {
         return $this->morphMany(
-            $this->getModelFromConfig('messages', Models\Message::class),
-            'participable'
+            config("laravel-messenger.messages.model", Models\Message::class),
+            config("laravel-messenger.users.morph", 'participable')
         );
     }
 
@@ -90,8 +83,8 @@ trait Messagable
      */
     public function discussionsWithNewMessages()
     {
-        $participationsTable = $this->getTableFromConfig('participations', 'participations');
-        $discussionsTable    = $this->getTableFromConfig('discussions', 'discussions');
+        $participationsTable = config("laravel-messenger.participations.table", 'participations');
+        $discussionsTable    = config("laravel-messenger.discussions.table", 'discussions');
 
         return $this->discussions()->where(function (Builder $query) use ($participationsTable, $discussionsTable) {
             $query->whereNull("$participationsTable.last_read");
@@ -107,29 +100,32 @@ trait Messagable
      */
 
     /**
-     * Define a many-to-many relationship.
+     * Define a polymorphic one-to-many relationship.
      *
      * @param  string  $related
+     * @param  string  $name
+     * @param  string  $type
+     * @param  string  $id
+     * @param  string  $localKey
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    abstract public function morphMany($related, $name, $type = null, $id = null, $localKey = null);
+
+    /**
+     * Define a polymorphic many-to-many relationship.
+     *
+     * @param  string  $related
+     * @param  string  $name
      * @param  string  $table
      * @param  string  $foreignPivotKey
      * @param  string  $relatedPivotKey
      * @param  string  $parentKey
      * @param  string  $relatedKey
-     * @param  string  $relation
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @param  bool  $inverse
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
      */
-    abstract public function belongsToMany($related, $table = null, $foreignPivotKey = null, $relatedPivotKey = null,
-                                  $parentKey = null, $relatedKey = null, $relation = null);
-
-    /**
-     * Define a one-to-many relationship.
-     *
-     * @param  string  $related
-     * @param  string  $foreignKey
-     * @param  string  $localKey
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    abstract public function hasMany($related, $foreignKey = null, $localKey = null);
+    abstract public function morphToMany(
+        $related, $name, $table = null, $foreignPivotKey = null, $relatedPivotKey = null, $parentKey = null,
+        $relatedKey = null, $inverse = false
+    );
 }
