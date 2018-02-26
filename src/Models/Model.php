@@ -1,6 +1,5 @@
 <?php namespace Arcanedev\LaravelMessenger\Models;
 
-use Arcanedev\LaravelMessenger\Traits\ConfigHelper;
 use Arcanedev\Support\Database\Model as BaseModel;
 
 /**
@@ -11,13 +10,6 @@ use Arcanedev\Support\Database\Model as BaseModel;
  */
 abstract class Model extends BaseModel
 {
-    /* -----------------------------------------------------------------
-     |  Traits
-     | -----------------------------------------------------------------
-     */
-
-    use ConfigHelper;
-
     /* -----------------------------------------------------------------
      |  Constructor
      | -----------------------------------------------------------------
@@ -31,7 +23,10 @@ abstract class Model extends BaseModel
     public function __construct(array $attributes = [])
     {
         $this->setConnection(
-            $this->getFromConfig('database.connection')
+            config('laravel-messenger.database.connection')
+        );
+        $this->setPrefix(
+            config('laravel-messenger.database.prefix')
         );
 
         parent::__construct($attributes);

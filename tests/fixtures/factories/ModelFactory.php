@@ -12,24 +12,19 @@ $factory->define(Models\Discussion::class, function (Faker $f) {
 });
 
 $factory->define(Models\Message::class, function (Faker $f) {
-    return version_compare(app()->version(), '5.2.0', '>=') ? [
-        'discussion_id' => function () { return factory(Models\Discussion::class)->create()->id; },
-        'user_id'       => function () { return factory(User::class)->create()->id; },
-        'body'          => $f->sentence,
-    ] : [
-        'discussion_id' => 1,
-        'user_id'       => 1,
-        'body'          => $f->sentence,
+    return [
+        'discussion_id'     => function () { return factory(Models\Discussion::class)->create()->id; },
+        'participable_type' => User::class,
+        'participable_id'   => 1,
+        'body'              => $f->sentence,
     ];
 });
 
-$factory->define(Models\Participant::class, function (Faker $f) {
-    return version_compare(app()->version(), '5.2.0', '>=') ? [
-        'discussion_id' => function () { return factory(Models\Discussion::class)->create()->id; },
-        'user_id'       => function () { return factory(User::class)->create()->id; },
-    ] : [
-        'discussion_id' => 1,
-        'user_id'       => 1,
+$factory->define(Models\Participation::class, function (Faker $f) {
+    return [
+        'discussion_id'     => function () { return factory(Models\Discussion::class)->create()->id; },
+        'participable_type' => User::class,
+        'participable_id'   => 1,
     ];
 });
 

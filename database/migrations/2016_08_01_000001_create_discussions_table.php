@@ -25,7 +25,7 @@ class CreateDiscussionsTable extends Migration
         parent::__construct();
 
         $this->setTable(
-            $this->getTableFromConfig('discussions', 'discussions')
+            config('laravel-messenger.discussions.table', 'discussions')
         );
     }
 

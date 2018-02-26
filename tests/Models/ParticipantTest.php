@@ -1,7 +1,7 @@
 <?php namespace Arcanedev\LaravelMessenger\Tests\Models;
 
 use Arcanedev\LaravelMessenger\Models\Discussion;
-use Arcanedev\LaravelMessenger\Models\Participant;
+use Arcanedev\LaravelMessenger\Models\Participation;
 use Arcanedev\LaravelMessenger\Tests\Stubs\Models\User;
 use Arcanedev\LaravelMessenger\Tests\TestCase;
 
@@ -21,19 +21,19 @@ class ParticipantTest extends TestCase
     /** @test */
     public function it_can_create_a_participant()
     {
-        /** @var \Arcanedev\LaravelMessenger\Models\Participant $participant */
-        $participant = $this->factory->create(Participant::class);
+        /** @var \Arcanedev\LaravelMessenger\Models\Participation $participant */
+        $participant = $this->factory->create(Participation::class);
 
-        static::assertInstanceOf(Participant::class, $participant);
-        static::assertInstanceOf(User::class, $participant->user);
-        static::assertEquals($participant->user_id, $participant->user->id);
+        static::assertInstanceOf(Participation::class, $participant);
+        static::assertInstanceOf(User::class, $participant->participable);
+        static::assertEquals($participant->participable_id, $participant->participable->id);
     }
 
     /** @test */
     public function it_can_associate_discussion_to_participant()
     {
-        /** @var \Arcanedev\LaravelMessenger\Models\Participant $participant */
-        $participant = $this->factory->create(Participant::class, ['discussion_id' => 0]);
+        /** @var \Arcanedev\LaravelMessenger\Models\Participation $participant */
+        $participant = $this->factory->create(Participation::class, ['discussion_id' => 0]);
 
         static::assertNull($participant->discussion);
 

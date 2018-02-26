@@ -9,6 +9,8 @@ return [
 
     'database' => [
         'connection' => env('DB_CONNECTION', 'mysql'),
+
+        'prefix'     => null,
     ],
 
     /* -----------------------------------------------------------------
@@ -19,6 +21,7 @@ return [
     'users' => [
         'table' => 'users',
         'model' => App\User::class,
+        'morph' => 'participable',
     ],
 
     'discussions' => [
@@ -26,9 +29,9 @@ return [
         'model' => Arcanedev\LaravelMessenger\Models\Discussion::class
     ],
 
-    'participants' => [
-        'table' => 'participants',
-        'model' => Arcanedev\LaravelMessenger\Models\Participant::class,
+    'participations' => [
+        'table' => 'participations',
+        'model' => Arcanedev\LaravelMessenger\Models\Participation::class,
     ],
 
     'messages' => [

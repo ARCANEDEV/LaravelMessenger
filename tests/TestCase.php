@@ -20,6 +20,9 @@ abstract class TestCase extends BaseTestCase
     /** @var  \Illuminate\Database\Eloquent\Factory */
     protected $factory;
 
+    /** @var  \Illuminate\Database\Eloquent\Collection */
+    protected $users;
+
     /* -----------------------------------------------------------------
      |  Main Methods
      | -----------------------------------------------------------------
@@ -99,6 +102,6 @@ abstract class TestCase extends BaseTestCase
      */
     private function seedTables()
     {
-        $this->factory->of(User::class)->times(3)->create();
+        $this->users = $this->factory->of(User::class)->times(3)->create();
     }
 }

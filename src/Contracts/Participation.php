@@ -1,7 +1,7 @@
 <?php namespace Arcanedev\LaravelMessenger\Contracts;
 
 /**
- * Interface  Participant
+ * Interface  Participation
  *
  * @package   Arcanedev\LaravelMessenger\Contracts
  * @author    ARCANEDEV <arcanedev.maroc@gmail.com>
@@ -9,14 +9,15 @@
  * @property  int                                            id
  * @property  int                                            discussion_id
  * @property  \Arcanedev\LaravelMessenger\Models\Discussion  discussion
- * @property  int                                            user_id
- * @property  \Illuminate\Database\Eloquent\Model            user
+ * @property  string                                         participable_type
+ * @property  int                                            participable_id
+ * @property  \Illuminate\Database\Eloquent\Model            participable
  * @property  \Carbon\Carbon                                 last_read
  * @property  \Carbon\Carbon                                 created_at
  * @property  \Carbon\Carbon                                 updated_at
  * @property  \Carbon\Carbon                                 deleted_at
  */
-interface Participant
+interface Participation
 {
     /* -----------------------------------------------------------------
      |  Relationships
@@ -31,11 +32,11 @@ interface Participant
     public function discussion();
 
     /**
-     * User relationship.
+     * Participable relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function user();
+    public function participable();
 
     /* -----------------------------------------------------------------
      |  Getters & Setters

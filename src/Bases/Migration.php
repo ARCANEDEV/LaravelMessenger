@@ -12,13 +12,6 @@ use Arcanedev\Support\Database\Migration as BaseMigration;
 abstract class Migration extends BaseMigration
 {
     /* -----------------------------------------------------------------
-     |  Traits
-     | -----------------------------------------------------------------
-     */
-
-    use ConfigHelper;
-
-    /* -----------------------------------------------------------------
      |  Constructor
      | -----------------------------------------------------------------
      */
@@ -29,7 +22,10 @@ abstract class Migration extends BaseMigration
     public function __construct()
     {
         $this->setConnection(
-            $this->getFromConfig('database.connection')
+            config('laravel-messenger.database.connection')
+        );
+        $this->setPrefix(
+            config('laravel-messenger.database.prefix')
         );
     }
 }

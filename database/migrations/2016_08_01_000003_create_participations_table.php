@@ -4,13 +4,13 @@ use Arcanedev\LaravelMessenger\Bases\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
 /**
- * Class     CreateParticipantsTable
+ * Class     CreateParticipationsTable
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  *
- * @see \Arcanedev\LaravelMessenger\Models\Participant
+ * @see \Arcanedev\LaravelMessenger\Models\Participation
  */
-class CreateParticipantsTable extends Migration
+class CreateParticipationsTable extends Migration
 {
     /* -----------------------------------------------------------------
      |  Constructor
@@ -25,7 +25,7 @@ class CreateParticipantsTable extends Migration
         parent::__construct();
 
         $this->setTable(
-            $this->getTableFromConfig('participants', 'participants')
+            config('laravel-messenger.participations.table', 'participations')
         );
     }
 
@@ -42,7 +42,7 @@ class CreateParticipantsTable extends Migration
         $this->createSchema(function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('discussion_id');
-            $table->unsignedInteger('user_id');
+            $table->morphs(config("laravel-messenger.users.morph", 'participable'));
             $table->timestamp('last_read')->nullable();
             $table->timestamps();
             $table->softDeletes();

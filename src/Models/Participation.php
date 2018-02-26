@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelMessenger\Models;
 
-use Arcanedev\LaravelMessenger\Contracts\Participant as ParticipantContract;
+use Arcanedev\LaravelMessenger\Contracts\Participation as ParticipantContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -12,14 +12,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property  int                                            id
  * @property  int                                            discussion_id
  * @property  \Arcanedev\LaravelMessenger\Models\Discussion  discussion
- * @property  int                                            user_id
- * @property  \Illuminate\Database\Eloquent\Model            user
+ * @property  string                                         participable_type
+ * @property  int                                            participable_id
+ * @property  \Illuminate\Database\Eloquent\Model            participable
  * @property  \Carbon\Carbon                                 last_read
  * @property  \Carbon\Carbon                                 created_at
  * @property  \Carbon\Carbon                                 updated_at
  * @property  \Carbon\Carbon                                 deleted_at
  */
-class Participant extends Model implements ParticipantContract
+class Participation extends Model implements ParticipantContract
 {
     /* -----------------------------------------------------------------
      |  Traits
@@ -38,7 +39,7 @@ class Participant extends Model implements ParticipantContract
      *
      * @var array
      */
-    protected $fillable = ['discussion_id', 'user_id', 'last_read'];
+    protected $fillable = ['discussion_id', 'participable_type', 'participable_id', 'last_read'];
 
     /**
      * The attributes that should be mutated to dates.
@@ -53,9 +54,9 @@ class Participant extends Model implements ParticipantContract
      * @var array
      */
     protected $casts = [
-        'id'            => 'integer',
-        'discussion_id' => 'integer',
-        'user_id'       => 'integer',
+        'id'              => 'integer',
+        'discussion_id'   => 'integer',
+        'participable_id' => 'integer',
     ];
 
     /* -----------------------------------------------------------------
@@ -71,7 +72,7 @@ class Participant extends Model implements ParticipantContract
     public function __construct(array $attributes = [])
     {
         $this->setTable(
-            $this->getTableFromConfig('participants', 'participants')
+            config('laravel-messenger.participations.table', 'participations')
         );
 
         parent::__construct($attributes);
@@ -90,20 +91,18 @@ class Participant extends Model implements ParticipantContract
     public function discussion()
     {
         return $this->belongsTo(
-            $this->getModelFromConfig('discussions', Discussion::class)
+            config('laravel-messenger.discussions.model', Discussion::class)
         );
     }
 
     /**
-     * User relationship.
+     * Participable relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function user()
+    public function participable()
     {
-        return $this->belongsTo(
-            $this->getModelFromConfig('users')
-        );
+        return $this->morphTo();
     }
 
     /* -----------------------------------------------------------------
@@ -112,12 +111,12 @@ class Participant extends Model implements ParticipantContract
      */
 
     /**
-     * Get the participant string info.
+     * Get the participable string info.
      *
      * @return string
      */
     public function stringInfo()
     {
-        return $this->user->name;
+        return $this->participable->getAttribute('name');
     }
 }
