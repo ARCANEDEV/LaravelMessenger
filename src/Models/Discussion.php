@@ -83,7 +83,7 @@ class Discussion extends Model implements DiscussionContract
     public function __construct(array $attributes = [])
     {
         $this->setTable(
-            config('laravel-messenger.discussions.table', 'discussions')
+            config('messenger.discussions.table', 'discussions')
         );
 
         parent::__construct($attributes);
@@ -102,7 +102,7 @@ class Discussion extends Model implements DiscussionContract
     public function participations()
     {
         return $this->hasMany(
-            config('laravel-messenger.participations.model', Participation::class)
+            config('messenger.participations.model', Participation::class)
         );
     }
 
@@ -114,7 +114,7 @@ class Discussion extends Model implements DiscussionContract
     public function messages()
     {
         return $this->hasMany(
-            config('laravel-messenger.messages.model', Message::class)
+            config('messenger.messages.model', Message::class)
         );
     }
 
@@ -146,7 +146,7 @@ class Discussion extends Model implements DiscussionContract
         $table = $this->getParticipationsTable();
 
         return $query->join($table, function (JoinClause $join) use ($table, $participable) {
-            $morph = config('laravel-messenger.users.morph', 'participable');
+            $morph = config('messenger.users.morph', 'participable');
 
             $join->on($this->getQualifiedKeyName(), '=', "{$table}.discussion_id")
                  ->where("{$table}.{$morph}_type", '=', $participable->getMorphClass())
@@ -201,7 +201,7 @@ class Discussion extends Model implements DiscussionContract
     public function scopeBetween(Builder $query, $participables)
     {
         return $query->whereHas($this->getParticipationsTable(), function (Builder $query) use ($participables) {
-            $morph = config('laravel-messenger.users.morph', 'participable');
+            $morph = config('messenger.users.morph', 'participable');
             $index = 0;
 
             foreach ($participables as $participable) {
@@ -257,7 +257,7 @@ class Discussion extends Model implements DiscussionContract
      */
     protected function getParticipationsTable()
     {
-        return config('laravel-messenger.participations.table', 'participations');
+        return config('messenger.participations.table', 'participations');
     }
 
     /* -----------------------------------------------------------------
@@ -315,7 +315,7 @@ class Discussion extends Model implements DiscussionContract
      */
     public function addParticipant(EloquentModel $participable)
     {
-        $morph = config('laravel-messenger.users.morph', 'participable');
+        $morph = config('messenger.users.morph', 'participable');
 
         return $this->participations()->firstOrCreate([
             "{$morph}_id"   => $participable->getKey(),
@@ -363,7 +363,7 @@ class Discussion extends Model implements DiscussionContract
      */
     public function removeParticipants($participables, $reload = true)
     {
-        $morph   = config('laravel-messenger.users.morph', 'participable');
+        $morph   = config('messenger.users.morph', 'participable');
         $deleted = 0;
 
         foreach ($participables as $participable) {
@@ -420,7 +420,7 @@ class Discussion extends Model implements DiscussionContract
      */
     public function getParticipationByParticipable(EloquentModel $participable)
     {
-        $morph = config('laravel-messenger.users.morph', 'participable');
+        $morph = config('messenger.users.morph', 'participable');
 
         return $this->participations()
             ->where("{$morph}_type", '=', $participable->getMorphClass())
@@ -491,7 +491,7 @@ class Discussion extends Model implements DiscussionContract
      */
     public function hasParticipation(EloquentModel $participable)
     {
-        $morph = config('laravel-messenger.users.morph', 'participable');
+        $morph = config('messenger.users.morph', 'participable');
 
         return $this->participations()
             ->where("{$morph}_id", '=', $participable->getKey())

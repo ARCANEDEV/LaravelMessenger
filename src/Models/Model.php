@@ -23,10 +23,10 @@ abstract class Model extends BaseModel
     public function __construct(array $attributes = [])
     {
         $this->setConnection(
-            config('laravel-messenger.database.connection')
+            config('messenger.database.connection')
         );
         $this->setPrefix(
-            config('laravel-messenger.database.prefix')
+            config('messenger.database.prefix')
         );
 
         parent::__construct($attributes);

@@ -39,7 +39,12 @@ class Participation extends Model implements ParticipantContract
      *
      * @var array
      */
-    protected $fillable = ['discussion_id', 'participable_type', 'participable_id', 'last_read'];
+    protected $fillable = [
+        'discussion_id',
+        'participable_type',
+        'participable_id',
+        'last_read',
+    ];
 
     /**
      * The attributes that should be mutated to dates.
@@ -72,7 +77,7 @@ class Participation extends Model implements ParticipantContract
     public function __construct(array $attributes = [])
     {
         $this->setTable(
-            config('laravel-messenger.participations.table', 'participations')
+            config('messenger.participations.table', 'participations')
         );
 
         parent::__construct($attributes);
@@ -91,7 +96,7 @@ class Participation extends Model implements ParticipantContract
     public function discussion()
     {
         return $this->belongsTo(
-            config('laravel-messenger.discussions.model', Discussion::class)
+            config('messenger.discussions.model', Discussion::class)
         );
     }
 

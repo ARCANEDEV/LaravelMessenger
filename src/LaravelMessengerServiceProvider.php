@@ -20,7 +20,7 @@ class LaravelMessengerServiceProvider extends PackageServiceProvider
      *
      * @var string
      */
-    protected $package = 'laravel-messenger';
+    protected $package = 'messenger';
 
     /* -----------------------------------------------------------------
      |  Main Methods
