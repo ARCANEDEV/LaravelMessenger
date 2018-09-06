@@ -29,9 +29,9 @@ trait Messagable
     public function discussions()
     {
         return $this->morphToMany(
-            config("laravel-messenger.discussions.model", Models\Discussion::class),
-            config("laravel-messenger.users.morph", 'participable'),
-            config("laravel-messenger.participations.table", 'participations')
+            config('messenger.discussions.model', Models\Discussion::class),
+            config('messenger.users.morph', 'participable'),
+            config('messenger.participations.table', 'participations')
         );
     }
 
@@ -43,8 +43,8 @@ trait Messagable
     public function participations()
     {
         return $this->morphMany(
-            config("laravel-messenger.participations.model", Models\Participation::class),
-            config("laravel-messenger.users.morph", 'participable')
+            config('messenger.participations.model', Models\Participation::class),
+            config('messenger.users.morph', 'participable')
         );
     }
 
@@ -56,8 +56,8 @@ trait Messagable
     public function messages()
     {
         return $this->morphMany(
-            config("laravel-messenger.messages.model", Models\Message::class),
-            config("laravel-messenger.users.morph", 'participable')
+            config('messenger.messages.model', Models\Message::class),
+            config('messenger.users.morph', 'participable')
         );
     }
 
@@ -83,8 +83,8 @@ trait Messagable
      */
     public function discussionsWithNewMessages()
     {
-        $participationsTable = config("laravel-messenger.participations.table", 'participations');
-        $discussionsTable    = config("laravel-messenger.discussions.table", 'discussions');
+        $participationsTable = config('messenger.participations.table', 'participations');
+        $discussionsTable    = config('messenger.discussions.table', 'discussions');
 
         return $this->discussions()->where(function (Builder $query) use ($participationsTable, $discussionsTable) {
             $query->whereNull("$participationsTable.last_read");

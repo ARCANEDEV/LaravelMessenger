@@ -41,7 +41,10 @@ class Message extends Model implements MessageContract
      *
      * @var array
      */
-    protected $fillable = ['discussion_id', 'body'];
+    protected $fillable = [
+        'discussion_id',
+        'body',
+    ];
 
     /**
      * The attributes that should be cast to native types.
@@ -67,7 +70,7 @@ class Message extends Model implements MessageContract
     public function __construct(array $attributes = [])
     {
         $this->setTable(
-            config('laravel-messenger.messeges.table', 'messages')
+            config('messenger.messeges.table', 'messages')
         );
 
         parent::__construct($attributes);
@@ -86,7 +89,7 @@ class Message extends Model implements MessageContract
     public function discussion()
     {
         return $this->belongsTo(
-            config('laravel-messenger.discussions.model', Discussion::class)
+            config('messenger.discussions.model', Discussion::class)
         );
     }
 
@@ -118,7 +121,7 @@ class Message extends Model implements MessageContract
     public function participations()
     {
         return $this->hasMany(
-            config('laravel-messenger.participations.model', Participation::class),
+            config('messenger.participations.model', Participation::class),
             'discussion_id',
             'discussion_id'
         );
@@ -136,7 +139,7 @@ class Message extends Model implements MessageContract
      */
     public function getRecipientsAttribute()
     {
-        $morph = config('laravel-messenger.users.morph', 'participable');
+        $morph = config('messenger.users.morph', 'participable');
 
         return $this->participations->reject(function (Participation $participant) use ($morph) {
             return $participant->getAttribute("{$morph}_id") === $this->getAttribute("{$morph}_id")

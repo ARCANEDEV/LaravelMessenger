@@ -6,7 +6,7 @@
   2. [Configuration](2-Configuration.md)
   3. [Usage](3-Usage.md)
 
-After you've published the config file `config/laravel-messenger.php`, you can customize the settings :
+After you've published the config file `config/messenger.php`, you can customize the settings :
 
 
 ```php

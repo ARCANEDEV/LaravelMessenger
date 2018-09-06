@@ -76,7 +76,7 @@ abstract class TestCase extends BaseTestCase
         $app['config']->set('auth.model', Stubs\Models\User::class);
 
         // Laravel Messenger Configs
-        $app['config']->set('laravel-messenger.users.model', Stubs\Models\User::class);
+        $app['config']->set('messenger.users.model', Stubs\Models\User::class);
     }
 
     /**
