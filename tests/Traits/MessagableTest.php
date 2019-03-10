@@ -1,11 +1,10 @@
 <?php namespace Arcanedev\LaravelMessenger\Tests\Traits;
 
-use Arcanedev\LaravelMessenger\Models\Discussion;
-use Arcanedev\LaravelMessenger\Models\Message;
-use Arcanedev\LaravelMessenger\Models\Participation;
-use Arcanedev\LaravelMessenger\Tests\Stubs\Models\User;
+use Arcanedev\LaravelMessenger\Models\{
+    Discussion, Message, Participation
+};
 use Arcanedev\LaravelMessenger\Tests\TestCase;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 
 /**
  * Class     MessagableTest

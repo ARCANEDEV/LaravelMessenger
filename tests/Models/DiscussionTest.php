@@ -5,7 +5,7 @@ use Arcanedev\LaravelMessenger\Models\Message;
 use Arcanedev\LaravelMessenger\Models\Participation;
 use Arcanedev\LaravelMessenger\Tests\Stubs\Models\User;
 use Arcanedev\LaravelMessenger\Tests\TestCase;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /**
@@ -286,7 +286,7 @@ class DiscussionTest extends TestCase
         $participants = $discussion->addParticipants($this->users);
 
         $rendered = $discussion->participationsString();
-        static::assertContains(', ', $rendered);
+        static::assertStringContainsString(', ', $rendered);
         static::assertCount($participants->count(), explode(', ', $rendered));
     }
 
