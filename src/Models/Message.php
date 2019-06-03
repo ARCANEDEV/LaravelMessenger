@@ -70,7 +70,7 @@ class Message extends Model implements MessageContract
     public function __construct(array $attributes = [])
     {
         $this->setTable(
-            config('messenger.messeges.table', 'messages')
+            config('messenger.messages.table', 'messages')
         );
 
         parent::__construct($attributes);
