@@ -22,12 +22,8 @@ abstract class Model extends BaseModel
      */
     public function __construct(array $attributes = [])
     {
-        $this->setConnection(
-            config('messenger.database.connection')
-        );
-        $this->setPrefix(
-            config('messenger.database.prefix')
-        );
+        $this->setConnection(config('messenger.database.connection'));
+        $this->setPrefix(config('messenger.database.prefix'));
 
         parent::__construct($attributes);
     }

@@ -20,11 +20,7 @@ abstract class Migration extends BaseMigration
      */
     public function __construct()
     {
-        $this->setConnection(
-            config('laravel-messenger.database.connection')
-        );
-        $this->setPrefix(
-            config('laravel-messenger.database.prefix')
-        );
+        $this->setConnection(config('messenger.database.connection'));
+        $this->setPrefix(config('messenger.database.prefix'));
     }
 }
