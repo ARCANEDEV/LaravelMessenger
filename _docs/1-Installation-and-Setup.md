@@ -16,6 +16,7 @@
 | ![LaravelMessenger v4.x][laravel_messenger_4_x] | ![Laravel v5.6][laravel_5_6]                                                           |
 | ![LaravelMessenger v5.x][laravel_messenger_5_x] | ![Laravel v5.7][laravel_5_7]                                                           |
 | ![LaravelMessenger v6.x][laravel_messenger_6_x] | ![Laravel v5.8][laravel_5_8]                                                           |
+| ![LaravelMessenger v7.x][laravel_messenger_7_x] | ![Laravel v6.0][laravel_6_0]                                                           |
 
 [laravel_5_1]:  https://img.shields.io/badge/v5.1-supported-brightgreen.svg?style=flat-square "Laravel v5.1"
 [laravel_5_2]:  https://img.shields.io/badge/v5.2-supported-brightgreen.svg?style=flat-square "Laravel v5.2"
@@ -25,6 +26,7 @@
 [laravel_5_6]:  https://img.shields.io/badge/v5.6-supported-brightgreen.svg?style=flat-square "Laravel v5.6"
 [laravel_5_7]:  https://img.shields.io/badge/v5.7-supported-brightgreen.svg?style=flat-square "Laravel v5.7"
 [laravel_5_8]:  https://img.shields.io/badge/v5.8-supported-brightgreen.svg?style=flat-square "Laravel v5.8"
+[laravel_6_0]:  https://img.shields.io/badge/v6.0-supported-brightgreen.svg?style=flat-square "Laravel v6.0"
 
 [laravel_messenger_1_x]: https://img.shields.io/badge/version-1.*-blue.svg?style=flat-square "LaravelMessenger v1.*"
 [laravel_messenger_2_x]: https://img.shields.io/badge/version-2.*-blue.svg?style=flat-square "LaravelMessenger v2.*"
@@ -32,6 +34,7 @@
 [laravel_messenger_4_x]: https://img.shields.io/badge/version-4.*-blue.svg?style=flat-square "LaravelMessenger v4.*"
 [laravel_messenger_5_x]: https://img.shields.io/badge/version-5.*-blue.svg?style=flat-square "LaravelMessenger v5.*"
 [laravel_messenger_6_x]: https://img.shields.io/badge/version-6.*-blue.svg?style=flat-square "LaravelMessenger v6.*"
+[laravel_messenger_7_x]: https://img.shields.io/badge/version-7.*-blue.svg?style=flat-square "LaravelMessenger v7.*"
 
 ## Composer
 
