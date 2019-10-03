@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelMessenger;
 
-use Arcanedev\Support\PackageServiceProvider;
+use Arcanedev\Support\Providers\PackageServiceProvider;
 
 /**
  * Class     LaravelMessengerServiceProvider
@@ -30,21 +30,20 @@ class LaravelMessengerServiceProvider extends PackageServiceProvider
     /**
      * Register the service provider.
      */
-    public function register()
+    public function register(): void
     {
         parent::register();
 
         $this->registerConfig();
+
         $this->bindModels();
     }
 
     /**
      * Boot the service provider.
      */
-    public function boot()
+    public function boot(): void
     {
-        parent::boot();
-
         $this->publishConfig();
 
         Messenger::$runsMigrations ? $this->loadMigrations() : $this->publishMigrations();
@@ -55,7 +54,7 @@ class LaravelMessengerServiceProvider extends PackageServiceProvider
      *
      * @return array
      */
-    public function provides()
+    public function provides(): array
     {
         return [
             Contracts\Discussion::class,
@@ -72,16 +71,16 @@ class LaravelMessengerServiceProvider extends PackageServiceProvider
     /**
      * Bind the models.
      */
-    private function bindModels()
+    private function bindModels(): void
     {
-        $config   = $this->config();
+        $config   = $this->app['config'];
         $bindings = [
-            'discussions'    => Contracts\Discussion::class,
-            'messages'       => Contracts\Message::class,
-            'participations' => Contracts\Participation::class,
+            Contracts\Discussion::class    => 'discussions',
+            Contracts\Message::class       => 'messages',
+            Contracts\Participation::class => 'participations',
         ];
 
-        foreach ($bindings as $key => $contract) {
+        foreach ($bindings as $contract => $key) {
             $this->bind($contract, $config->get("{$this->package}.{$key}.model"));
         }
     }

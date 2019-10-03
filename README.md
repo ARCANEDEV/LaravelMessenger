@@ -22,7 +22,7 @@ This Laravel Messenger will allow you to add a messaging system into your Larave
   * Easy setup &amp; configuration.
   * Well documented &amp; IDE Friendly.
   * Well tested with maximum code quality.
-  * Laravel `5.1` to `6.0` are supported.
+  * Laravel `5.1` to `6.x` are supported.
   * Made with :heart: &amp; :coffee:.
   
 ## Table of contents
@@ -45,7 +45,7 @@ If you discover any security related issues, please email arcanedev.maroc@gmail.
   - [All Contributors][link-contributors]
   - [cmgmyr/laravel-messenger](https://github.com/cmgmyr/laravel-messenger)
 
-[badge_laravel]:      https://img.shields.io/badge/Laravel-5.1%20to%206.0-orange.svg?style=flat-square
+[badge_laravel]:      https://img.shields.io/badge/Laravel-5.1%20to%206.x-orange.svg?style=flat-square
 [badge_license]:      https://img.shields.io/packagist/l/arcanedev/laravel-messenger.svg?style=flat-square
 [badge_build]:        https://img.shields.io/travis/ARCANEDEV/LaravelMessenger.svg?style=flat-square
 [badge_coverage]:     https://img.shields.io/scrutinizer/coverage/g/ARCANEDEV/LaravelMessenger.svg?style=flat-square
