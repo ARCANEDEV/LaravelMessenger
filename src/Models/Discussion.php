@@ -16,11 +16,11 @@ use Illuminate\Support\Collection;
  * @package  Arcanedev\LaravelMessenger\Models
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  *
- * @property  int             id
- * @property  string          subject
- * @property  \Carbon\Carbon  created_at
- * @property  \Carbon\Carbon  updated_at
- * @property  \Carbon\Carbon  deleted_at
+ * @property  int                         id
+ * @property  string                      subject
+ * @property  \Illuminate\Support\Carbon  created_at
+ * @property  \Illuminate\Support\Carbon  updated_at
+ * @property  \Illuminate\Support\Carbon  deleted_at
  *
  * @property  \Illuminate\Database\Eloquent\Model         creator
  * @property  \Illuminate\Database\Eloquent\Collection    messages
@@ -35,13 +35,6 @@ use Illuminate\Support\Collection;
  */
 class Discussion extends Model implements DiscussionContract
 {
-    /* -----------------------------------------------------------------
-     |  Traits
-     | -----------------------------------------------------------------
-     */
-
-    use SoftDeletes;
-
     /* -----------------------------------------------------------------
      |  Properties
      | -----------------------------------------------------------------

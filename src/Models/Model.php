@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelMessenger\Models;
 
 use Arcanedev\Support\Database\Model as BaseModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class     Model
@@ -10,6 +11,13 @@ use Arcanedev\Support\Database\Model as BaseModel;
  */
 abstract class Model extends BaseModel
 {
+    /* -----------------------------------------------------------------
+     |  Traits
+     | -----------------------------------------------------------------
+     */
+
+    use SoftDeletes;
+
     /* -----------------------------------------------------------------
      |  Constructor
      | -----------------------------------------------------------------

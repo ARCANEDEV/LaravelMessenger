@@ -13,8 +13,9 @@ use Arcanedev\LaravelMessenger\Contracts\Message as MessageContract;
  * @property  string                                         participable_type
  * @property  int                                            participable_id
  * @property  int                                            body
- * @property  \Carbon\Carbon                                 created_at
- * @property  \Carbon\Carbon                                 updated_at
+ * @property  \Illuminate\Support\Carbon                     created_at
+ * @property  \Illuminate\Support\Carbon                     updated_at
+ * @property  \Illuminate\Support\Carbon                     deleted_at
  *
  * @property  \Arcanedev\LaravelMessenger\Models\Discussion  discussion
  * @property  \Illuminate\Database\Eloquent\Model            participable
@@ -45,6 +46,13 @@ class Message extends Model implements MessageContract
         'discussion_id',
         'body',
     ];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that should be cast to native types.

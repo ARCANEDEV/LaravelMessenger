@@ -45,6 +45,7 @@ class CreateMessagesTable extends Migration
             $table->morphs(config('messenger.users.morph', 'participable'));
             $table->text('body');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 }

@@ -1,7 +1,6 @@
 <?php namespace Arcanedev\LaravelMessenger\Models;
 
 use Arcanedev\LaravelMessenger\Contracts\Participation as ParticipantContract;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class     Participant
@@ -15,20 +14,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property  string                                         participable_type
  * @property  int                                            participable_id
  * @property  \Illuminate\Database\Eloquent\Model            participable
- * @property  \Carbon\Carbon                                 last_read
- * @property  \Carbon\Carbon                                 created_at
- * @property  \Carbon\Carbon                                 updated_at
- * @property  \Carbon\Carbon                                 deleted_at
+ * @property  \Illuminate\Support\Carbon                     last_read
+ * @property  \Illuminate\Support\Carbon                     created_at
+ * @property  \Illuminate\Support\Carbon                     updated_at
+ * @property  \Illuminate\Support\Carbon                     deleted_at
  */
 class Participation extends Model implements ParticipantContract
 {
-    /* -----------------------------------------------------------------
-     |  Traits
-     | -----------------------------------------------------------------
-     */
-
-    use SoftDeletes;
-
     /* -----------------------------------------------------------------
      |  Properties
      | -----------------------------------------------------------------
