@@ -1,8 +1,10 @@
-<?php namespace Arcanedev\LaravelMessenger\Tests\Models;
+<?php
 
-use Arcanedev\LaravelMessenger\Models\Discussion;
-use Arcanedev\LaravelMessenger\Models\Message;
-use Arcanedev\LaravelMessenger\Models\Participation;
+declare(strict_types=1);
+
+namespace Arcanedev\LaravelMessenger\Tests\Models;
+
+use Arcanedev\LaravelMessenger\Models\{Discussion, Message, Participation};
 use Arcanedev\LaravelMessenger\Tests\TestCase;
 
 /**
@@ -19,7 +21,7 @@ class MessageTest extends TestCase
      */
 
     /** @test */
-    public function it_can_save_message_to_discussion()
+    public function it_can_save_message_to_discussion(): void
     {
         /**
          * @var \Arcanedev\LaravelMessenger\Models\Message     $message
@@ -35,7 +37,7 @@ class MessageTest extends TestCase
     }
 
     /** @test */
-    public function it_can_save_multiple_messages_to_discussion()
+    public function it_can_save_multiple_messages_to_discussion(): void
     {
         /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $messages   = $this->factory->of(Message::class)->times(3)->make();
@@ -47,7 +49,7 @@ class MessageTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_author()
+    public function it_can_get_author(): void
     {
         /**
          * @var  \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $user
@@ -67,7 +69,7 @@ class MessageTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_the_recipients()
+    public function it_can_get_the_recipients(): void
     {
         /**
          * @var  \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $userOne

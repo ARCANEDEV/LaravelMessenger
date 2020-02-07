@@ -1,4 +1,8 @@
-<?php namespace Arcanedev\LaravelMessenger\Tests;
+<?php
+
+declare(strict_types=1);
+
+namespace Arcanedev\LaravelMessenger\Tests;
 
 use Arcanedev\LaravelMessenger\LaravelMessengerServiceProvider;
 
@@ -43,7 +47,7 @@ class LaravelMessengerServiceProviderTest extends TestCase
      */
 
     /** @test */
-    public function it_can_be_instantiated()
+    public function it_can_be_instantiated(): void
     {
         $expectations = [
             \Illuminate\Support\ServiceProvider::class,
@@ -58,7 +62,7 @@ class LaravelMessengerServiceProviderTest extends TestCase
     }
 
     /** @test */
-    public function it_can_provides()
+    public function it_can_provides(): void
     {
         $expected = [
             \Arcanedev\LaravelMessenger\Contracts\Discussion::class,

@@ -1,12 +1,14 @@
-<?php namespace Arcanedev\LaravelMessenger\Models;
+<?php
+
+declare(strict_types=1);
+
+namespace Arcanedev\LaravelMessenger\Models;
 
 use Arcanedev\LaravelMessenger\Contracts\Discussion as DiscussionContract;
 use Arcanedev\LaravelMessenger\Contracts\Message as MessageContract;
 use Arcanedev\LaravelMessenger\Contracts\Participation as ParticipationContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -29,9 +31,8 @@ use Illuminate\Support\Collection;
  *
  * @method static  \Illuminate\Database\Eloquent\Builder|static  subject(string $subject, bool $strict)
  * @method static  \Illuminate\Database\Eloquent\Builder|static  between(\Illuminate\Support\Collection|array $participables)
- * @method static  \Illuminate\Database\Eloquent\Builder|static  forUser(\Illuminate\Database\Eloquent\Model $participable)
- * @method static  \Illuminate\Database\Eloquent\Builder|static  withParticipations()
- * @method static  \Illuminate\Database\Eloquent\Builder|static  forUserWithNewMessages(\Illuminate\Database\Eloquent\Model $participable)
+ * @method static  \Illuminate\Database\Eloquent\Builder|static  forUser(\Illuminate\Database\Eloquent\Model|mixed $participable)
+ * @method static  \Illuminate\Database\Eloquent\Builder|static  forUserWithNewMessages(\Illuminate\Database\Eloquent\Model|mixed $participable)
  */
 class Discussion extends Model implements DiscussionContract
 {
@@ -137,27 +138,14 @@ class Discussion extends Model implements DiscussionContract
     public function scopeForUser(Builder $query, EloquentModel $participable)
     {
         $table = $this->getParticipationsTable();
+        $morph = config('messenger.users.morph', 'participable');
 
-        return $query->join($table, function (JoinClause $join) use ($table, $participable) {
-            $morph = config('messenger.users.morph', 'participable');
-
-            $join->on($this->getQualifiedKeyName(), '=', "{$table}.discussion_id")
-                 ->where("{$table}.{$morph}_type", '=', $participable->getMorphClass())
-                 ->where("{$table}.{$morph}_id", '=', $participable->getKey())
-                 ->whereNull("{$table}.deleted_at");
-        });
-    }
-
-    /**
-     * Scope discussions to load participations relationship.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     *
-     * @return \Illuminate\Database\Eloquent\Builder|static
-     */
-    public function scopeWithParticipations(Builder $query)
-    {
-        return $query->with(['participations']);
+        return $query
+            ->join($table, $this->getQualifiedKeyName(), '=', "{$table}.discussion_id")
+            ->where("{$table}.{$morph}_type", '=', $participable->getMorphClass())
+            ->where("{$table}.{$morph}_id", '=', $participable->getKey())
+            ->whereNull("{$table}.deleted_at")
+            ->select("{$this->getTable()}.*");
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Arcanedev\LaravelMessenger\Bases\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
@@ -25,7 +27,7 @@ class CreateDiscussionsTable extends Migration
         parent::__construct();
 
         $this->setTable(
-            config('messenger.discussions.table', 'discussions')
+            (string) config('messenger.discussions.table', 'discussions')
         );
     }
 
@@ -37,9 +39,9 @@ class CreateDiscussionsTable extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        $this->createSchema(function (Blueprint $table) {
+        $this->createSchema(function (Blueprint $table): void {
             $table->increments('id');
             $table->string('subject')->nullable();
             $table->timestamps();

@@ -1,4 +1,8 @@
-<?php namespace Arcanedev\LaravelMessenger;
+<?php
+
+declare(strict_types=1);
+
+namespace Arcanedev\LaravelMessenger;
 
 use Arcanedev\Support\Providers\PackageServiceProvider;
 
@@ -44,9 +48,13 @@ class LaravelMessengerServiceProvider extends PackageServiceProvider
      */
     public function boot(): void
     {
-        $this->publishConfig();
+        if ($this->app->runningInConsole()) {
+            $this->publishConfig();
 
-        Messenger::$runsMigrations ? $this->loadMigrations() : $this->publishMigrations();
+            Messenger::$runsMigrations
+                ? $this->loadMigrations()
+                : $this->publishMigrations();
+        }
     }
 
     /**

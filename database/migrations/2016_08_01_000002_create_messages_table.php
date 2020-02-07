@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Arcanedev\LaravelMessenger\Bases\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
@@ -25,7 +27,7 @@ class CreateMessagesTable extends Migration
         parent::__construct();
 
         $this->setTable(
-            config('messenger.messages.table', 'messages')
+            (string) config('messenger.messages.table', 'messages')
         );
     }
 
@@ -37,9 +39,9 @@ class CreateMessagesTable extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        $this->createSchema(function (Blueprint $table) {
+        $this->createSchema(function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedInteger('discussion_id');
             $table->morphs(config('messenger.users.morph', 'participable'));

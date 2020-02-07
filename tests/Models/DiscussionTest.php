@@ -1,12 +1,13 @@
-<?php namespace Arcanedev\LaravelMessenger\Tests\Models;
+<?php
 
-use Arcanedev\LaravelMessenger\Models\Discussion;
-use Arcanedev\LaravelMessenger\Models\Message;
-use Arcanedev\LaravelMessenger\Models\Participation;
+declare(strict_types=1);
+
+namespace Arcanedev\LaravelMessenger\Tests\Models;
+
+use Arcanedev\LaravelMessenger\Models\{Discussion, Message, Participation};
 use Arcanedev\LaravelMessenger\Tests\Stubs\Models\User;
 use Arcanedev\LaravelMessenger\Tests\TestCase;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
+use Illuminate\Support\{Carbon, Collection};
 
 /**
  * Class     DiscussionTest
@@ -22,7 +23,7 @@ class DiscussionTest extends TestCase
      */
 
     /** @test */
-    public function it_can_create_discussion()
+    public function it_can_create_discussion(): void
     {
         /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion = $this->factory->create(Discussion::class, [
@@ -35,7 +36,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_the_creator()
+    public function it_can_get_the_creator(): void
     {
         /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion = $this->factory->create(Discussion::class);
@@ -48,7 +49,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_add_a_participant()
+    public function it_can_add_a_participant(): void
     {
         /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $user         = $this->users->first();
@@ -64,7 +65,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_add_participant_without_duplication()
+    public function it_can_add_participant_without_duplication(): void
     {
         /** * @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $user       = $this->users->first();
@@ -79,7 +80,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_add_multiple_participants()
+    public function it_can_add_multiple_participants(): void
     {
         /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
@@ -97,7 +98,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_remove_a_participant()
+    public function it_can_remove_a_participant(): void
     {
         /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion  = $this->factory->create(Discussion::class);
@@ -114,7 +115,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_remove_a_participant_without_reloading_the_collection()
+    public function it_can_remove_a_participant_without_reloading_the_collection(): void
     {
         /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion = $this->factory->create(Discussion::class);
@@ -131,7 +132,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_remove_multiple_participants()
+    public function it_can_remove_multiple_participants(): void
     {
         /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
@@ -150,7 +151,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_remove_multiple_participants_without_reloading_the_collection()
+    public function it_can_remove_multiple_participants_without_reloading_the_collection(): void
     {
         /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
@@ -172,7 +173,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_trashed_participants()
+    public function it_can_get_trashed_participants(): void
     {
         /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
@@ -195,7 +196,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_restore_all_trashed_participants()
+    public function it_can_restore_all_trashed_participants(): void
     {
         /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
@@ -216,7 +217,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_see_if_discussion_is_unread_by_user()
+    public function it_can_see_if_discussion_is_unread_by_user(): void
     {
         /**
          * @var \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $user
@@ -239,7 +240,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_check_if_has_users_and_participants()
+    public function it_can_check_if_has_users_and_participants(): void
     {
         /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
@@ -261,7 +262,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_a_participant_by_user_id()
+    public function it_can_get_a_participant_by_user_id(): void
     {
         /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $user       = $this->users->first();
@@ -279,7 +280,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_participants_string()
+    public function it_can_get_participants_string(): void
     {
         /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion   = $this->factory->create(Discussion::class);
@@ -291,7 +292,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_participants_custom_string()
+    public function it_can_get_participants_custom_string(): void
     {
         /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion = $this->factory->create(Discussion::class);
@@ -306,7 +307,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_mark_last_read()
+    public function it_can_mark_last_read(): void
     {
         /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion  = $this->factory->create(Discussion::class);
@@ -335,7 +336,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_skip_mark_last_read_if_participant_not_found()
+    public function it_can_skip_mark_last_read_if_participant_not_found(): void
     {
         /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $user       = $this->users->first();
@@ -345,7 +346,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_check_participant_if_has_not_marked_as_read()
+    public function it_can_check_participant_if_has_not_marked_as_read(): void
     {
         /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion  = $this->factory->create(Discussion::class);
@@ -365,7 +366,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_the_latest_message()
+    public function it_can_get_the_latest_message(): void
     {
         /** @var \Arcanedev\LaravelMessenger\Models\Discussion  $discussion */
         $discussion = $this->factory->create(Discussion::class);
@@ -385,7 +386,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_get_all_latest_discussions()
+    public function it_get_all_latest_discussions(): void
     {
         $now = Carbon::now();
         for ($i = 0; $i < 5; $i++) {
@@ -412,7 +413,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_discussions_by_subject()
+    public function it_can_get_discussions_by_subject(): void
     {
         $attributes = [
             ['subject' => 'Hello World'],
@@ -429,7 +430,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_discussions_by_strict_subject()
+    public function it_can_get_discussions_by_strict_subject(): void
     {
         $attributes = [
             ['subject' => 'Hello World'],
@@ -445,7 +446,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_users_ids()
+    public function it_can_get_users_ids(): void
     {
         /**
          * @var \Illuminate\Database\Eloquent\Collection       $users
@@ -462,7 +463,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_all_discussions_between_specific_users()
+    public function it_can_get_all_discussions_between_specific_users(): void
     {
         /**
          * @var \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $userOne
@@ -490,7 +491,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_all_discussions_for_a_user()
+    public function it_can_get_all_discussions_for_a_user(): void
     {
         /**
          * @var \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $user
@@ -508,13 +509,13 @@ class DiscussionTest extends TestCase
             $this->factory->make(Participation::class)
         );
 
-        $discussions = Discussion::forUser($user)->withParticipations()->get();
+        $discussions = Discussion::forUser($user)->with(['participations'])->get();
 
         static::assertCount(2, $discussions);
     }
 
     /** @test */
-    public function it_can_get_all_users_for_a_discussion()
+    public function it_can_get_all_users_for_a_discussion(): void
     {
         /**
          * @var  \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $userOne
@@ -537,7 +538,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_all_discussions_for_a_user_with_new_messages()
+    public function it_can_get_all_discussions_for_a_user_with_new_messages(): void
     {
         /**
          * @var  \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $user
@@ -561,7 +562,7 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_should_get_all_unread_messages_for_user()
+    public function it_should_get_all_unread_messages_for_user(): void
     {
         /**
          * @var  \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $userOne
@@ -606,12 +607,12 @@ class DiscussionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_count_of_all_unread_messages_for_user()
+    public function it_can_get_count_of_all_unread_messages_for_user(): void
     {
         /**
-         * @var \Arcanedev\LaravelMessenger\Models\Discussion   $discussion
-         * @var \Arcanedev\LaravelMessenger\Models\Participation  $participantOne
-         * @var \Arcanedev\LaravelMessenger\Models\Participation  $participantTwo
+         * @var  \Arcanedev\LaravelMessenger\Models\Discussion     $discussion
+         * @var  \Arcanedev\LaravelMessenger\Models\Participation  $participantOne
+         * @var  \Arcanedev\LaravelMessenger\Models\Participation  $participantTwo
          */
         $discussion = $this->factory->create(Discussion::class);
         $discussion->participations()->saveMany([

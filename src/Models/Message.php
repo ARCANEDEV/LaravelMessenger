@@ -1,4 +1,8 @@
-<?php namespace Arcanedev\LaravelMessenger\Models;
+<?php
+
+declare(strict_types=1);
+
+namespace Arcanedev\LaravelMessenger\Models;
 
 use Arcanedev\LaravelMessenger\Contracts\Message as MessageContract;
 

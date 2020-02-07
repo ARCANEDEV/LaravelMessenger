@@ -1,4 +1,8 @@
-<?php namespace Arcanedev\LaravelMessenger\Bases;
+<?php
+
+declare(strict_types=1);
+
+namespace Arcanedev\LaravelMessenger\Bases;
 
 use Arcanedev\Support\Database\Migration as BaseMigration;
 

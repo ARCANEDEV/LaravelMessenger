@@ -1,4 +1,8 @@
-<?php namespace Arcanedev\LaravelMessenger;
+<?php
+
+declare(strict_types=1);
+
+namespace Arcanedev\LaravelMessenger;
 
 /**
  * Class     Messenger
