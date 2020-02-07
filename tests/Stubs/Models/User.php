@@ -1,4 +1,8 @@
-<?php namespace Arcanedev\LaravelMessenger\Tests\Stubs\Models;
+<?php
+
+declare(strict_types=1);
+
+namespace Arcanedev\LaravelMessenger\Tests\Stubs\Models;
 
 use Arcanedev\LaravelMessenger\Traits\Messagable;
 use Arcanedev\Support\Database\Model;

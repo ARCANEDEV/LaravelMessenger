@@ -1,4 +1,8 @@
-<?php namespace Arcanedev\LaravelMessenger\Tests;
+<?php
+
+declare(strict_types=1);
+
+namespace Arcanedev\LaravelMessenger\Tests;
 
 use Arcanedev\LaravelMessenger\Tests\Stubs\Models\User;
 use Illuminate\Database\Eloquent\Factory as ModelFactory;
@@ -44,7 +48,7 @@ abstract class TestCase extends BaseTestCase
      *
      * @return array
      */
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
             \Arcanedev\LaravelMessenger\LaravelMessengerServiceProvider::class,
@@ -56,7 +60,7 @@ abstract class TestCase extends BaseTestCase
      *
      * @param  \Illuminate\Foundation\Application   $app
      */
-    protected function getEnvironmentSetUp($app)
+    protected function getEnvironmentSetUp($app): void
     {
         // Laravel App Configs
         $app['config']->set('auth.model', Stubs\Models\User::class);
@@ -68,7 +72,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Load Model Factories.
      */
-    private function loadFactories()
+    private function loadFactories(): void
     {
         $this->factory = $this->app->make(ModelFactory::class);
         $this->factory->load(__DIR__.'/fixtures/factories');
@@ -77,7 +81,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Migrate the tables.
      */
-    protected function migrate()
+    protected function migrate(): void
     {
         $this->loadMigrationsFrom(realpath(__DIR__.'/../database/migrations'));
         $this->loadMigrationsFrom(realpath(__DIR__.'/fixtures/migrations'));
@@ -86,7 +90,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Seed the tables.
      */
-    private function seedTables()
+    private function seedTables(): void
     {
         $this->users = $this->factory->of(User::class)->times(3)->create();
     }

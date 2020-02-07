@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Arcanedev\LaravelMessenger\Models;
 use Arcanedev\LaravelMessenger\Tests\Stubs\Models\User;
 use Faker\Generator as Faker;
@@ -16,7 +18,7 @@ $factory->define(Models\Message::class, function (Faker $f) {
         'discussion_id'     => function () { return factory(Models\Discussion::class)->create()->id; },
         'participable_type' => User::class,
         'participable_id'   => 1,
-        'body'              => $f->sentence,
+        'body'              => $f->sentence(),
     ];
 });
 

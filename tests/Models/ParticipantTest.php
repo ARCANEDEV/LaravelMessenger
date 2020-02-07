@@ -1,7 +1,10 @@
-<?php namespace Arcanedev\LaravelMessenger\Tests\Models;
+<?php
 
-use Arcanedev\LaravelMessenger\Models\Discussion;
-use Arcanedev\LaravelMessenger\Models\Participation;
+declare(strict_types=1);
+
+namespace Arcanedev\LaravelMessenger\Tests\Models;
+
+use Arcanedev\LaravelMessenger\Models\{Discussion, Participation};
 use Arcanedev\LaravelMessenger\Tests\Stubs\Models\User;
 use Arcanedev\LaravelMessenger\Tests\TestCase;
 
@@ -19,7 +22,7 @@ class ParticipantTest extends TestCase
      */
 
     /** @test */
-    public function it_can_create_a_participant()
+    public function it_can_create_a_participant(): void
     {
         /** @var \Arcanedev\LaravelMessenger\Models\Participation $participant */
         $participant = $this->factory->create(Participation::class);
@@ -30,7 +33,7 @@ class ParticipantTest extends TestCase
     }
 
     /** @test */
-    public function it_can_associate_discussion_to_participant()
+    public function it_can_associate_discussion_to_participant(): void
     {
         /** @var \Arcanedev\LaravelMessenger\Models\Participation $participant */
         $participant = $this->factory->create(Participation::class, ['discussion_id' => 0]);

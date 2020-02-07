@@ -1,4 +1,8 @@
-<?php namespace Arcanedev\LaravelMessenger\Traits;
+<?php
+
+declare(strict_types=1);
+
+namespace Arcanedev\LaravelMessenger\Traits;
 
 use Arcanedev\LaravelMessenger\Models;
 use Illuminate\Database\Eloquent\Builder;
@@ -93,39 +97,4 @@ trait Messagable
             );
         })->get();
     }
-
-    /* -----------------------------------------------------------------
-     |  Eloquent Methods
-     | -----------------------------------------------------------------
-     */
-
-    /**
-     * Define a polymorphic one-to-many relationship.
-     *
-     * @param  string  $related
-     * @param  string  $name
-     * @param  string  $type
-     * @param  string  $id
-     * @param  string  $localKey
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
-     */
-    abstract public function morphMany($related, $name, $type = null, $id = null, $localKey = null);
-
-    /**
-     * Define a polymorphic many-to-many relationship.
-     *
-     * @param  string  $related
-     * @param  string  $name
-     * @param  string  $table
-     * @param  string  $foreignPivotKey
-     * @param  string  $relatedPivotKey
-     * @param  string  $parentKey
-     * @param  string  $relatedKey
-     * @param  bool  $inverse
-     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
-     */
-    abstract public function morphToMany(
-        $related, $name, $table = null, $foreignPivotKey = null, $relatedPivotKey = null, $parentKey = null,
-        $relatedKey = null, $inverse = false
-    );
 }

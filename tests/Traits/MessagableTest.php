@@ -1,4 +1,8 @@
-<?php namespace Arcanedev\LaravelMessenger\Tests\Traits;
+<?php
+
+declare(strict_types=1);
+
+namespace Arcanedev\LaravelMessenger\Tests\Traits;
 
 use Arcanedev\LaravelMessenger\Models\{
     Discussion, Message, Participation
@@ -20,7 +24,7 @@ class MessagableTest extends TestCase
      */
 
     /** @test */
-    public function it_should_get_all_discussions_with_new_messages()
+    public function it_should_get_all_discussions_with_new_messages(): void
     {
         /** @var  \Arcanedev\LaravelMessenger\Models\Discussion  $discussionOne */
         $discussionOne = $this->factory->create(Discussion::class);
@@ -53,7 +57,7 @@ class MessagableTest extends TestCase
     }
 
     /** @test */
-    public function it_should_get_participant_discussions()
+    public function it_should_get_participant_discussions(): void
     {
         /**
          * @var  \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $user
@@ -76,7 +80,7 @@ class MessagableTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_all_messages()
+    public function it_can_get_all_messages(): void
     {
         /** @var  \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $user */
         $user = $this->users->first();
@@ -93,7 +97,7 @@ class MessagableTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_participants()
+    public function it_can_get_participants(): void
     {
         /** @var  \Arcanedev\LaravelMessenger\Tests\Stubs\Models\User  $user */
         $user = $this->users->first();
