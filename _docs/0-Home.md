@@ -8,7 +8,7 @@ This Laravel Messenger will allow you to add a messaging system into your Larave
   * Easy setup &amp; configuration.
   * Well documented &amp; IDE Friendly.
   * Well tested with maximum code quality.
-  * Laravel `5.1` to `6.x` are supported.
+  * Laravel `5.1` to `7.x` are supported.
   * Made with :heart: &amp; :coffee:.
 
 ## Table of contents
