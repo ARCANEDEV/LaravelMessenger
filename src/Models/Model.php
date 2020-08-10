@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Arcanedev\LaravelMessenger\Models;
 
-use Arcanedev\Support\Database\Model as BaseModel;
+use Arcanedev\Support\Database\PrefixedModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @package  Arcanedev\LaravelMessenger\Bases
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-abstract class Model extends BaseModel
+abstract class Model extends PrefixedModel
 {
     /* -----------------------------------------------------------------
      |  Traits

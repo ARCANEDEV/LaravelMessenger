@@ -10,31 +10,34 @@
 
 | LaravelMessenger                                | Laravel                                                                                |
 |:------------------------------------------------|:---------------------------------------------------------------------------------------|
-| ![LaravelMessenger v1.x][laravel_messenger_1_x] | ![Laravel v5.1][laravel_5_1] ![Laravel v5.2][laravel_5_2] ![Laravel v5.3][laravel_5_3] |
-| ![LaravelMessenger v2.x][laravel_messenger_2_x] | ![Laravel v5.4][laravel_5_4]                                                           |
-| ![LaravelMessenger v3.x][laravel_messenger_3_x] | ![Laravel v5.5][laravel_5_5]                                                           |
-| ![LaravelMessenger v4.x][laravel_messenger_4_x] | ![Laravel v5.6][laravel_5_6]                                                           |
-| ![LaravelMessenger v5.x][laravel_messenger_5_x] | ![Laravel v5.7][laravel_5_7]                                                           |
-| ![LaravelMessenger v6.x][laravel_messenger_6_x] | ![Laravel v5.8][laravel_5_8]                                                           |
+| ![LaravelMessenger v8.x][laravel_messenger_8_x] | ![Laravel v7.x][laravel_7_x]                                                           |
 | ![LaravelMessenger v7.x][laravel_messenger_7_x] | ![Laravel v6.x][laravel_6_x]                                                           |
+| ![LaravelMessenger v6.x][laravel_messenger_6_x] | ![Laravel v5.8][laravel_5_8]                                                           |
+| ![LaravelMessenger v5.x][laravel_messenger_5_x] | ![Laravel v5.7][laravel_5_7]                                                           |
+| ![LaravelMessenger v4.x][laravel_messenger_4_x] | ![Laravel v5.6][laravel_5_6]                                                           |
+| ![LaravelMessenger v3.x][laravel_messenger_3_x] | ![Laravel v5.5][laravel_5_5]                                                           |
+| ![LaravelMessenger v2.x][laravel_messenger_2_x] | ![Laravel v5.4][laravel_5_4]                                                           |
+| ![LaravelMessenger v1.x][laravel_messenger_1_x] | ![Laravel v5.1][laravel_5_1] ![Laravel v5.2][laravel_5_2] ![Laravel v5.3][laravel_5_3] |
 
-[laravel_5_1]:  https://img.shields.io/badge/v5.1-supported-brightgreen.svg?style=flat-square "Laravel v5.1"
-[laravel_5_2]:  https://img.shields.io/badge/v5.2-supported-brightgreen.svg?style=flat-square "Laravel v5.2"
-[laravel_5_3]:  https://img.shields.io/badge/v5.3-supported-brightgreen.svg?style=flat-square "Laravel v5.3"
-[laravel_5_4]:  https://img.shields.io/badge/v5.4-supported-brightgreen.svg?style=flat-square "Laravel v5.4"
-[laravel_5_5]:  https://img.shields.io/badge/v5.5-supported-brightgreen.svg?style=flat-square "Laravel v5.5"
-[laravel_5_6]:  https://img.shields.io/badge/v5.6-supported-brightgreen.svg?style=flat-square "Laravel v5.6"
-[laravel_5_7]:  https://img.shields.io/badge/v5.7-supported-brightgreen.svg?style=flat-square "Laravel v5.7"
-[laravel_5_8]:  https://img.shields.io/badge/v5.8-supported-brightgreen.svg?style=flat-square "Laravel v5.8"
+[laravel_7_x]:  https://img.shields.io/badge/v7.x-supported-brightgreen.svg?style=flat-square "Laravel v7.x"
 [laravel_6_x]:  https://img.shields.io/badge/v6.x-supported-brightgreen.svg?style=flat-square "Laravel v6.x"
+[laravel_5_8]:  https://img.shields.io/badge/v5.8-supported-brightgreen.svg?style=flat-square "Laravel v5.8"
+[laravel_5_7]:  https://img.shields.io/badge/v5.7-supported-brightgreen.svg?style=flat-square "Laravel v5.7"
+[laravel_5_6]:  https://img.shields.io/badge/v5.6-supported-brightgreen.svg?style=flat-square "Laravel v5.6"
+[laravel_5_5]:  https://img.shields.io/badge/v5.5-supported-brightgreen.svg?style=flat-square "Laravel v5.5"
+[laravel_5_4]:  https://img.shields.io/badge/v5.4-supported-brightgreen.svg?style=flat-square "Laravel v5.4"
+[laravel_5_3]:  https://img.shields.io/badge/v5.3-supported-brightgreen.svg?style=flat-square "Laravel v5.3"
+[laravel_5_2]:  https://img.shields.io/badge/v5.2-supported-brightgreen.svg?style=flat-square "Laravel v5.2"
+[laravel_5_1]:  https://img.shields.io/badge/v5.1-supported-brightgreen.svg?style=flat-square "Laravel v5.1"
 
-[laravel_messenger_1_x]: https://img.shields.io/badge/version-1.x-blue.svg?style=flat-square "LaravelMessenger v1.x"
-[laravel_messenger_2_x]: https://img.shields.io/badge/version-2.x-blue.svg?style=flat-square "LaravelMessenger v2.x"
-[laravel_messenger_3_x]: https://img.shields.io/badge/version-3.x-blue.svg?style=flat-square "LaravelMessenger v3.x"
-[laravel_messenger_4_x]: https://img.shields.io/badge/version-4.x-blue.svg?style=flat-square "LaravelMessenger v4.x"
-[laravel_messenger_5_x]: https://img.shields.io/badge/version-5.x-blue.svg?style=flat-square "LaravelMessenger v5.x"
-[laravel_messenger_6_x]: https://img.shields.io/badge/version-6.x-blue.svg?style=flat-square "LaravelMessenger v6.x"
+[laravel_messenger_8_x]: https://img.shields.io/badge/version-8.x-blue.svg?style=flat-square "LaravelMessenger v8.x"
 [laravel_messenger_7_x]: https://img.shields.io/badge/version-7.x-blue.svg?style=flat-square "LaravelMessenger v7.x"
+[laravel_messenger_6_x]: https://img.shields.io/badge/version-6.x-blue.svg?style=flat-square "LaravelMessenger v6.x"
+[laravel_messenger_5_x]: https://img.shields.io/badge/version-5.x-blue.svg?style=flat-square "LaravelMessenger v5.x"
+[laravel_messenger_4_x]: https://img.shields.io/badge/version-4.x-blue.svg?style=flat-square "LaravelMessenger v4.x"
+[laravel_messenger_3_x]: https://img.shields.io/badge/version-3.x-blue.svg?style=flat-square "LaravelMessenger v3.x"
+[laravel_messenger_2_x]: https://img.shields.io/badge/version-2.x-blue.svg?style=flat-square "LaravelMessenger v2.x"
+[laravel_messenger_1_x]: https://img.shields.io/badge/version-1.x-blue.svg?style=flat-square "LaravelMessenger v1.x"
 
 ## Composer
 

@@ -33,7 +33,7 @@ class CreateUsersTable extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         $this->createSchema(function (Blueprint $table) {
             $table->increments('id');
